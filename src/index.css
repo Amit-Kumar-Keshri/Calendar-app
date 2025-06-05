@@ -1,0 +1,162 @@
+body {
+  margin: 0;
+  font-family: "Segoe UI", Arial, sans-serif;
+  background: #f4f6fa;
+  color: #222;
+}
+
+button {
+  background: #1976d2;
+  color: #fff;
+  border: none;
+  padding: 8px 16px;
+  margin: 4px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: background 0.2s;
+}
+button:hover {
+  background: #1565c0;
+}
+
+h2 {
+  margin-top: 0;
+}
+
+.calendar-container {
+  max-width: 900px;
+  margin: 32px auto;
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.07);
+  padding: 24px;
+}
+
+.week-days,
+.month-days {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+
+.month-days > div {
+  margin-bottom: 2px;
+}
+
+.day-cell {
+  flex: 1;
+  min-width: 60px;
+  min-height: 80px;
+  border: 1px solid #e0e0e0;
+  background: #fafbfc;
+  margin: 2px;
+  border-radius: 4px;
+  padding: 4px;
+  box-sizing: border-box;
+}
+
+.day-cell strong {
+  display: block;
+  margin-bottom: 4px;
+}
+
+.event-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.event-list li {
+  background: #e3f2fd;
+  color: #1976d2;
+  margin-bottom: 2px;
+  padding: 2px 4px;
+  border-radius: 2px;
+  font-size: 0.95em;
+}
+
+/* MonthView Table Styles - Use default app colors and design */
+.monthview-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: #fff;
+  border-radius: 8px;
+  overflow: hidden;
+  margin-top: 24px;
+  /* Remove box-shadow for default look */
+}
+
+.monthview-table th {
+  border: 1px solid #e0e0e0;
+  padding: 8px 0;
+  background: #f7f7f7;
+  font-weight: 500;
+  color: #222;
+  text-align: center;
+}
+
+.monthview-table td {
+  border: 1px solid #e0e0e0;
+  vertical-align: top;
+  min-width: 90px;
+  height: 80px;
+  padding: 4px;
+  position: relative;
+  background: #fafbfc;
+  color: #222;
+  transition: background 0.2s;
+}
+
+.monthview-table td.monthview-today {
+  background: #fffde7;
+  color: #1976d2;
+}
+
+.monthview-table td.monthview-other-month {
+  background: #f0f0f0;
+  color: #bbb;
+}
+
+.monthview-date {
+  font-weight: 700;
+  margin-bottom: 2px;
+  color: #222;
+}
+
+.monthview-date.monthview-today {
+  color: #1976d2;
+}
+
+.monthview-event-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.monthview-event-list li {
+  background: #e3f2fd;
+  color: #1976d2;
+  margin-bottom: 2px;
+  padding: 2px 4px;
+  border-radius: 2px;
+  font-size: 0.95em;
+  font-weight: 400;
+  transition: background 0.2s;
+}
+
+.monthview-event-list li.monthview-event-birthday {
+  font-weight: 700;
+}
+
+.monthview-event-list li.monthview-event-more {
+  color: #888;
+  font-size: 0.9em;
+  background: transparent;
+  padding: 0;
+}
+
+.monthview-event-time {
+  font-size: 0.9em;
+  color: #555;
+}
