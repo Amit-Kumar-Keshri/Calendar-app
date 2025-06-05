@@ -56,45 +56,36 @@ const MonthView: React.FC<MonthViewProps> = ({ events, onSwitchView }) => {
 
   return (
     <div>
-      <div style={{ display: "flex", alignItems: "center", marginBottom: 16 }}>
-        <button onClick={handlePreviousMonth} style={{ marginRight: 8 }}>
+      <div className="monthview-toolbar">
+        <button onClick={handlePreviousMonth} className="monthview-nav-btn">
           {"<"}
         </button>
-        <button onClick={handleToday} style={{ marginRight: 8 }}>
+        <button onClick={handleToday} className="monthview-nav-btn">
           today
         </button>
-        <h2
-          style={{
-            flex: 1,
-            textAlign: "center",
-            margin: 0,
-          }}
-        >
+        <h2 className="monthview-title">
           {currentMonth.toLocaleString("default", { month: "long" })} {year}
         </h2>
-        <button onClick={handleNextMonth} style={{ marginLeft: 8 }}>
+        <button onClick={handleNextMonth} className="monthview-nav-btn">
           {">"}
         </button>
       </div>
-      <table
-        style={{
-          width: "100%",
-          borderCollapse: "collapse",
-          background: "#fff",
-        }}
-      >
+      <div className="monthview-switch">
+        <button className="monthview-switch-btn monthview-switch-month">
+          month
+        </button>
+        <button
+          className="monthview-switch-btn monthview-switch-week"
+          onClick={() => onSwitchView("week")}
+        >
+          week
+        </button>
+      </div>
+      <table className="monthview-table">
         <thead>
           <tr>
             {["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"].map((d, i) => (
-              <th
-                key={i}
-                style={{
-                  border: "1px solid #e0e0e0",
-                  padding: "8px 0",
-                  background: "#f7f7f7",
-                  fontWeight: 500,
-                }}
-              >
+              <th key={i} className="monthview-th">
                 {d}
               </th>
             ))}
@@ -124,52 +115,36 @@ const MonthView: React.FC<MonthViewProps> = ({ events, onSwitchView }) => {
                 return (
                   <td
                     key={di}
-                    style={{
-                      border: "1px solid #e0e0e0",
-                      verticalAlign: "top",
-                      background: today
-                        ? "#fffde7"
+                    className={
+                      "monthview-td" +
+                      (today
+                        ? " monthview-today"
                         : isCurrentMonth
-                        ? "#fafbfc"
-                        : "#f0f0f0",
-                      color: isCurrentMonth ? "#222" : "#bbb",
-                      minWidth: 90,
-                      height: 80,
-                      padding: 4,
-                      position: "relative",
-                    }}
+                        ? ""
+                        : " monthview-other-month")
+                    }
                   >
                     <div
-                      style={{
-                        fontWeight: today ? 700 : 400,
-                        color: today ? "#1976d2" : undefined,
-                        marginBottom: 2,
-                      }}
+                      className={
+                        "monthview-date" +
+                        (today ? " monthview-date-today" : "")
+                      }
                     >
                       {date.getDate()}
                     </div>
-                    <ul className="event-list">
+                    <ul className="monthview-event-list">
                       {dayEvents.slice(0, 3).map((event) => (
                         <li
                           key={event.id}
-                          style={{
-                            background: "#e3f2fd",
-                            color: "#1976d2",
-                            marginBottom: 2,
-                            padding: "2px 4px",
-                            borderRadius: 2,
-                            fontSize: "0.95em",
-                            fontWeight: event.summary
-                              ?.toLowerCase()
-                              .includes("birthday")
-                              ? 700
-                              : 400,
-                          }}
+                          className={
+                            "monthview-event" +
+                            (event.summary?.toLowerCase().includes("birthday")
+                              ? " monthview-event-birthday"
+                              : "")
+                          }
                         >
-                          {/* Event name */}
                           {event.summary}
-                          {/* Start and end time below event name */}
-                          <div style={{ fontSize: "0.9em", color: "#555" }}>
+                          <div className="monthview-event-time">
                             {event.startTime
                               ? new Date(event.startTime).toLocaleTimeString(
                                   [],
@@ -190,7 +165,7 @@ const MonthView: React.FC<MonthViewProps> = ({ events, onSwitchView }) => {
                         </li>
                       ))}
                       {dayEvents.length > 3 && (
-                        <li style={{ color: "#888", fontSize: "0.9em" }}>
+                        <li className="monthview-event-more">
                           +{dayEvents.length - 3} more
                         </li>
                       )}
@@ -202,15 +177,6 @@ const MonthView: React.FC<MonthViewProps> = ({ events, onSwitchView }) => {
           ))}
         </tbody>
       </table>
-      <div style={{ marginTop: 16, display: "flex", gap: 8 }}>
-        <button style={{ background: "#1976d2", color: "#fff" }}>month</button>
-        <button
-          style={{ background: "#e0e0e0", color: "#222" }}
-          onClick={() => onSwitchView("week")}
-        >
-          week
-        </button>
-      </div>
     </div>
   );
 };
