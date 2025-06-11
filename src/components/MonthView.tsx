@@ -1,6 +1,6 @@
-import React, { use, useEffect, useState } from "react";
+import React, { useState } from "react";
 import type { Event } from "../types";
-import { getMonthDays, getWeekDays } from "../utils/dateTime";
+import { getMonthDays } from "../utils/dateTime";
 // import { calendar } from "googleapis/build/src/apis/calendar";
 
 interface MonthViewProps {
@@ -8,34 +8,7 @@ interface MonthViewProps {
   onSwitchView: (view: "month" | "week") => void;
 }
 
-const getWeeksInMonth = (year: number, month: number) => {
-  const weeks: Date[][] = [];
-  const firstDayOfMonth = new Date(year, month, 1);
-  const lastDayOfMonth = new Date(year, month + 1, 0);
-  let current = new Date(firstDayOfMonth);
-  // Adjust to Monday (0=Sunday, 1=Monday)
-  const dayOfWeek = current.getDay() === 0 ? 6 : current.getDay() - 1;
-  current.setDate(current.getDate() - dayOfWeek);
 
-  while (current <= lastDayOfMonth || weeks.length < 6) {
-    const week: Date[] = [];
-    for (let i = 0; i < 7; i++) {
-      week.push(new Date(current));
-      current.setDate(current.getDate() + 1);
-    }
-    weeks.push(week);
-  }
-  return weeks;
-};
-
-const isToday = (date: Date) => {
-  const now = new Date();
-  return (
-    date.getFullYear() === now.getFullYear() &&
-    date.getMonth() === now.getMonth() &&
-    date.getDate() === now.getDate()
-  );
-};
 
 const getEventStart = (event: Event) =>
   event.start.dateTime

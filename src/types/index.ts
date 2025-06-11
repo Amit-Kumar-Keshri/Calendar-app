@@ -1,5 +1,10 @@
 export interface Event {
     id: string;
+    title?: string; // Optional for backward compatibility
+    startTime?: string | null; // Optional for backward compatibility
+    endTime?: string | null;
+    startDate: string | null;
+    endDate: string| null;
     summary: string;
     description?: string;
     start: {

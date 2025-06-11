@@ -11,14 +11,7 @@ const App: React.FC = () => {
 
   useEffect(() => {
     const loadEvents = async () => {
-      // Fetch events for the current month by default
-      const now = new Date();
-      const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
-      const endOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0);
-      const fetchedEvents = await fetchEvents(
-        startOfMonth.toISOString(),
-        endOfMonth.toISOString()
-      );
+      const fetchedEvents = await fetchEvents();
       setEvents(fetchedEvents);
     };
     loadEvents();

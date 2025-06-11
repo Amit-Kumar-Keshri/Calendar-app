@@ -17,7 +17,15 @@ export const isSameDay = (
   );
 };
 
-export const getWeekDays = (currentDate, selectedDate, breakRequest = null) => {
+export const getWeekDays = ({
+  currentDate,
+  selectedDate,
+  breakRequest = null,
+}: {
+  currentDate: Date;
+  selectedDate: Date;
+  breakRequest?: { startDate: Date; endDate: Date } | null;
+}) => {
   const startOfWeek = new Date(currentDate);
   startOfWeek.setDate(currentDate.getDate() - currentDate.getDay());
 
@@ -38,7 +46,14 @@ export const getWeekDays = (currentDate, selectedDate, breakRequest = null) => {
   });
 };
 
-export const getMonthDays = ({ currentDate, selectedDate }) => {
+export const getMonthDays = ({
+  currentDate,
+  selectedDate,
+}: {
+  currentDate: Date;
+  selectedDate: Date;
+  breakRequest?: { startDate: Date; endDate: Date } | null;
+}) => {
   const year = currentDate.getFullYear();
   const month = currentDate.getMonth();
 

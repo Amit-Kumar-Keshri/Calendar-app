@@ -41,15 +41,6 @@ const generateWeekArray = (monday: Date) => {
   return week;
 };
 
-const isToday = (date: Date) => {
-  const now = new Date();
-  return (
-    date.getFullYear() === now.getFullYear() &&
-    date.getMonth() === now.getMonth() &&
-    date.getDate() === now.getDate()
-  );
-};
-
 const hourHeight = 56;
 
 const getEventStart = (event: Event) =>
@@ -168,7 +159,7 @@ const WeekView: React.FC<WeekViewProps> = ({ events, onSwitchView }) => {
       >
         {/* Weekday header row */}
         <div className="weekview-header-empty" />
-        {["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"].map((d, i) => (
+        {["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"].map((d) => (
           <div key={d} className="weekview-header-cell">
             {d}
           </div>
@@ -217,7 +208,7 @@ const WeekView: React.FC<WeekViewProps> = ({ events, onSwitchView }) => {
                   if (!start || !end) return false;
                   return isMultiDay(event) && start <= date && date <= end;
                 })
-                .map((event, idx, arr) => {
+                .map((event, idx) => {
                   const start = getEventStart(event)!;
                   const end = getEventEnd(event)!;
                   const weekStart = currentWeek[0];
@@ -333,7 +324,7 @@ const WeekView: React.FC<WeekViewProps> = ({ events, onSwitchView }) => {
 
                   return (
                     <div
-                      key={event.id}
+                      key={event.id+ idx}
                       className="weekview-event"
                       style={{
                         top,
