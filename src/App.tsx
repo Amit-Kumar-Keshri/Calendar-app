@@ -7,7 +7,7 @@ import type { Event } from "./types";
 
 const App: React.FC = () => {
   const [events, setEvents] = useState<Event[]>([]);
-  const [view, setView] = useState<"week" | "month">("month");
+  const [view, setView] = useState<"week" | "month">("week");
 
   useEffect(() => {
     const loadEvents = async () => {

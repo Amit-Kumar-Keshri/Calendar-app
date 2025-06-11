@@ -1,3 +1,5 @@
+@import "tailwindcss";
+
 body {
   margin: 0;
   font-family: "Segoe UI", Arial, sans-serif;
@@ -26,7 +28,7 @@ h2 {
 }
 
 .calendar-container {
-  max-width: 900px;
+  max-width: 1100px;
   margin: 32px auto;
   background: #fff;
   border-radius: 8px;
@@ -116,7 +118,7 @@ h2 {
   margin: 0;
 }
 
-.monthview-table th {
+.monthview-table .th {
   border: 1px solid #e0e0e0;
   padding: 8px 0;
   background: #f7f7f7;
@@ -125,7 +127,15 @@ h2 {
   text-align: center;
 }
 
-.monthview-table td {
+.monthview-table .tr {
+  display: flex;
+  width: 100%;
+  justify-content: space-between;
+}
+.monthview-table .th {
+  width: 100%;
+}
+.monthview-table .td {
   border: 1px solid #e0e0e0;
   vertical-align: top;
   min-width: 90px;
@@ -137,18 +147,18 @@ h2 {
   transition: background 0.2s;
 }
 
-.monthview-table td.monthview-today {
+.monthview-table .td.monthview-today {
   background: #fffde7;
   color: #1976d2;
 }
 
-.monthview-table td.monthview-other-month {
-  background: #f0f0f0 ;
-  color: #bbb ;
+.monthview-table .td.monthview-other-month {
+  background: #f0f0f0;
+  color: #bbb;
 }
 
 .monthview-td.monthview-other-month .monthview-date {
-  color: #bbb ;
+  color: #bbb;
   opacity: 0.7;
 }
 
@@ -278,7 +288,6 @@ h2 {
   border: 1px solid #e0e0e0;
   background: #fff;
   margin-top: 20px;
-
 }
 
 .weekview-header-empty {
@@ -357,4 +366,138 @@ h2 {
 .weekview-event-time {
   font-size: 0.9em;
   color: #555;
+}
+
+.monthview-event-bar {
+  background: #1a73e8;
+  color: #fff;
+  border-radius: 4px;
+  font-weight: 500;
+  font-size: 0.95em;
+  padding: 2px 8px;
+  margin: 2px 2px 4px 2px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  min-height: 22px;
+  display: flex;
+  align-items: center;
+  position: relative;
+  z-index: 2;
+}
+
+.weekview-event-multiday {
+  background: #1a73e8 !important;
+  color: #fff !important;
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 2px;
+  height: 22px;
+  z-index: 3;
+  font-weight: 500;
+  font-size: 0.95em;
+  border-radius: 4px;
+  box-sizing: border-box;
+  padding: 2px 8px;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+}
+
+.monthview-body {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  grid-template-rows: repeat(6, 150px);
+  gap: 0;
+  width: 100%;
+}
+
+.monthview-body .monthview-td {
+  border: 1px solid #e0e0e0;
+  min-height: 80px;
+  background: #fafbfc;
+  padding: 4px 2px 2px 2px;
+  box-sizing: border-box;
+  position: relative;
+  overflow: visible;
+}
+
+.single-day-event {
+  padding: 2px 4px;
+  background: #3079ce;
+  color: #fff;
+  margin-bottom: 2px;
+  border-radius: 3px;
+  font-size: 0.97em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.monthview-more-link {
+  color: #1976d2;
+  background: #e3f2fd;
+  border-radius: 2px;
+  font-size: 0.95em;
+  padding: 1px 4px;
+  cursor: pointer;
+  display: inline-block;
+  margin-top: 2px;
+  margin-bottom: 2px;
+  transition: background 0.2s;
+}
+
+.monthview-more-link:hover {
+  background: #bbdefb;
+  text-decoration: underline;
+}
+
+.monthview-popup {
+  position: absolute;
+  top: 28px;
+  left: 0;
+  right: 0;
+  z-index: 10;
+  background: #fff;
+  border: 1px solid #1976d2;
+  border-radius: 6px;
+  box-shadow: 0 2px 12px #0002;
+  padding: 10px 8px 8px 8px;
+  min-width: 140px;
+  max-width: 220px;
+  min-height: 32px;
+  max-height: 220px;
+  overflow-y: auto;
+  font-size: 0.97em;
+}
+
+.monthview-popup .popup-title {
+  font-weight: 600;
+  margin-bottom: 6px;
+  color: #1976d2;
+  font-size: 1em;
+}
+
+.monthview-popup .popup-close {
+  position: absolute;
+  top: 4px;
+  right: 8px;
+  background: none;
+  border: none;
+  color: #888;
+  font-size: 1.1em;
+  cursor: pointer;
+}
+
+.monthview-popup .popup-event {
+  background: #3079ce;
+  color: #fff;
+  border-radius: 3px;
+  padding: 2px 6px;
+  margin-bottom: 3px;
+  font-size: 0.97em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
