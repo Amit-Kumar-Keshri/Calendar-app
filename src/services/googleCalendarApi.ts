@@ -6,16 +6,16 @@ const API_KEY = import.meta.env.VITE_GOOGLE_API_KEY as string;
 const CALENDAR_ID = import.meta.env.VITE_GOOGLE_CALENDAR_ID as string;
 
 export const fetchEvents = async (
-  timeMin?: string,
-  timeMax?: string
+  // timeMin?: string,
+  // timeMax?: string
 ): Promise<Event[]> => {
   const params: any = {
     key: API_KEY,
     singleEvents: true,
     orderBy: "startTime",
     maxResults: 2500,
-    timeMin: timeMin || new Date().toISOString(),
-    timeMax: timeMax,
+    // timeMin: timeMin || new Date().toISOString(),
+    // timeMax: timeMax,
   };
 
   Object.keys(params).forEach(
