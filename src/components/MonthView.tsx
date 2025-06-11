@@ -271,3 +271,4 @@ const MonthView: React.FC<MonthViewProps> = ({ events, onSwitchView }) => {
   );
 };
 export default MonthView;
+
