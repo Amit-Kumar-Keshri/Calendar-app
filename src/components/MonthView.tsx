@@ -1,7 +1,9 @@
 import React, { useState } from "react";
 import type { Event } from "../types";
 import { getMonthDays } from "../utils/dateTime";
-// import { calendar } from "googleapis/build/src/apis/calendar";
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faAngleLeft,faAngleRight } from '@fortawesome/free-solid-svg-icons';
+
 
 interface MonthViewProps {
   events: Event[];
@@ -14,8 +16,8 @@ const getEventStart = (event: Event) =>
   event.start.dateTime
     ? new Date(event.start.dateTime)
     : event.start.date
-    ? new Date(event.start.date)
-    : null;
+      ? new Date(event.start.date)
+      : null;
 
 const getEventEnd = (event: Event) => {
   if (event.end.dateTime) return new Date(event.end.dateTime);
@@ -91,9 +93,9 @@ const MonthView: React.FC<MonthViewProps> = ({ events, onSwitchView }) => {
     setCurrentDate(today);
     setSelectedDate(today);
   };
-  
-  
-  
+
+
+
   const totalEventsinDay = (date: Date): Event[] => {
     return events.filter((event) => {
       const start = getEventStart(event);
@@ -105,32 +107,35 @@ const MonthView: React.FC<MonthViewProps> = ({ events, onSwitchView }) => {
 
   return (
     <div className="monthview-container">
-      <div className="monthview-toolbar">
-        <button onClick={handlePreviousMonth} className="monthview-nav-btn">
-          {"<"}
-        </button>
-        <button onClick={handleToday} className="monthview-nav-btn">
-          today
-        </button>
-        <h2 className="monthview-title">
-          {getMonthName(currentDate)} {currentDate.getFullYear()}{" "}
-        </h2>
-        <button onClick={handleNextMonth} className="monthview-nav-btn">
-          {">"}
-        </button>
+      <div className="head_section">
+        <div className="monthview-toolbar">
+          <button onClick={handleToday} className="monthview-nav-btn">
+            today
+          </button>
+          <span className="button-arrow">
+            <button onClick={handlePreviousMonth} className="monthview-nav-btn">
+              <FontAwesomeIcon icon={faAngleLeft} />
+            </button>
+            <button onClick={handleNextMonth} className="monthview-nav-btn">
+              <FontAwesomeIcon icon={faAngleRight} />
+            </button>
+          </span>
+          <h2 className="monthview-title">
+            {getMonthName(currentDate)} {currentDate.getFullYear()}{" "}
+          </h2>
+        </div>
+        <div className="monthview-switch">
+          <button className="monthview-switch-btn monthview-switch-month">
+            month
+          </button>
+          <button
+            className="monthview-switch-btn monthview-switch-week"
+            onClick={() => onSwitchView("week")}
+          >
+            week
+          </button>
+        </div>
       </div>
-      <div className="monthview-switch">
-        <button className="monthview-switch-btn monthview-switch-month">
-          month
-        </button>
-        <button
-          className="monthview-switch-btn monthview-switch-week"
-          onClick={() => onSwitchView("week")}
-        >
-          week
-        </button>
-      </div>
-
       <div className="monthview-table">
         <div>
           <div className="tr">
@@ -157,18 +162,23 @@ const MonthView: React.FC<MonthViewProps> = ({ events, onSwitchView }) => {
                   start.getDate() === day.fullDate.getDate()
                 );
               });
-
-              // All-day/multi-day events (those with start.date or multi-day)
               const allDayEvents = allEvents.filter(
                 (event) => !event.start.dateTime || isMultiDay(event)
               );
-
-              // Combine: show all-day/multi-day first, then timed events
               const dayEvents = [...allDayEvents, ...timedEvents];
-
               const showPopup = popupIdx === idx;
+              // Determine if this day is in the current month
+              const isCurrentMonth =
+                day.fullDate.getMonth() === currentDate.getMonth() &&
+                day.fullDate.getFullYear() === currentDate.getFullYear();
               return (
-                <div className="monthview-td" key={idx}>
+                <div
+                  className={
+                    "monthview-td" +
+                    (isCurrentMonth ? "" : " monthview-other-month")
+                  }
+                  key={idx}
+                >
                   <div className="monthview-date">{day.date}</div>
                   {/* Show up to 3 events (all-day/multi-day first, then timed) */}
                   {dayEvents.slice(0, 3).map((event, i) => (

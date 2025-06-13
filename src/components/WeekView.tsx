@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from "react";
 import type { Event } from "../types";
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faAngleLeft,faAngleRight } from '@fortawesome/free-solid-svg-icons';
 
 interface WeekViewProps {
   events: Event[];
@@ -125,18 +127,23 @@ const WeekView: React.FC<WeekViewProps> = ({ events, onSwitchView }) => {
 
   return (
     <div>
+       <div className="head_section">
       {/* Toolbar */}
       <div className="weekview-toolbar">
-        <button onClick={navigateToPreviousWeek} className="weekview-nav-btn">
-          {"<"}
-        </button>
         <button onClick={handleToday} className="weekview-nav-btn">
           today
         </button>
-        <h2 className="weekview-title">{formatWeekRange()}</h2>
-        <button onClick={navigateToNextWeek} className="weekview-nav-btn">
-          {">"}
+        <span className="button-arrow">
+        <button onClick={navigateToPreviousWeek} className="weekview-nav-btn">
+        <FontAwesomeIcon icon={faAngleLeft} />
         </button>
+         <button onClick={navigateToNextWeek} className="weekview-nav-btn">
+        <FontAwesomeIcon icon={faAngleRight} />
+        </button>
+        </span>
+        
+        <h2 className="weekview-title">{formatWeekRange()}</h2>
+       
       </div>
       {/* Switch buttons */}
       <div className="weekview-switch">
@@ -149,6 +156,7 @@ const WeekView: React.FC<WeekViewProps> = ({ events, onSwitchView }) => {
         <button className="weekview-switch-btn weekview-switch-week" disabled>
           week
         </button>
+      </div>
       </div>
       {/* Week View Grid */}
       <div
