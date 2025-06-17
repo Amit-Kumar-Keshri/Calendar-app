@@ -125,14 +125,14 @@ const MonthView: React.FC<MonthViewProps> = ({ events, onSwitchView }) => {
           </h2>
         </div>
         <div className="monthview-switch">
-          <button className="monthview-switch-btn monthview-switch-month">
-            month
-          </button>
           <button
             className="monthview-switch-btn monthview-switch-week"
             onClick={() => onSwitchView("week")}
           >
             week
+          </button>
+          <button className="monthview-switch-btn monthview-switch-month">
+            month
           </button>
         </div>
       </div>

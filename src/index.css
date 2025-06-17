@@ -44,7 +44,7 @@ h2 {
   margin-bottom: 8px;
 }
 
-.month-days>div {
+.month-days > div {
   margin-bottom: 2px;
 }
 
@@ -108,7 +108,15 @@ h2 {
   font-size: 1rem;
   cursor: pointer;
   text-transform: capitalize;
-  font-family: var(--gm3-button-outlined-label-text-font, "Google Sans Flex", "Google Sans Text", "Google Sans", Roboto, Arial, sans-serif);
+  font-family: var(
+    --gm3-button-outlined-label-text-font,
+    "Google Sans Flex",
+    "Google Sans Text",
+    "Google Sans",
+    Roboto,
+    Arial,
+    sans-serif
+  );
 }
 
 .monthview-nav-btn:last-child {
@@ -132,7 +140,15 @@ h2 {
   text-align: center;
   font-size: 12px;
   line-height: 32px;
-  font-family: var(--gm3-button-outlined-label-text-font, "Google Sans Flex", "Google Sans Text", "Google Sans", Roboto, Arial, sans-serif);
+  font-family: var(
+    --gm3-button-outlined-label-text-font,
+    "Google Sans Flex",
+    "Google Sans Text",
+    "Google Sans",
+    Roboto,
+    Arial,
+    sans-serif
+  );
   color: #444746;
   text-transform: uppercase;
   font-weight: 500;
@@ -277,7 +293,15 @@ h2 {
   font-size: 1rem;
   cursor: pointer;
   text-transform: capitalize;
-  font-family: var(--gm3-button-outlined-label-text-font, "Google Sans Flex", "Google Sans Text", "Google Sans", Roboto, Arial, sans-serif);
+  font-family: var(
+    --gm3-button-outlined-label-text-font,
+    "Google Sans Flex",
+    "Google Sans Text",
+    "Google Sans",
+    Roboto,
+    Arial,
+    sans-serif
+  );
 }
 
 .weekview-nav-btn:last-child {
@@ -351,34 +375,63 @@ h2 {
 }
 
 .weekview-header-cell {
-  background: #f7f7f7;
-  border-left: 1px solid #e0e0e0;
-  border-bottom: 1px solid #e0e0e0;
-  text-align: center;
-  font-weight: 500;
-  font-size: 12px;
-  line-height: 32px;
-  font-family: var(--gm3-button-outlined-label-text-font, "Google Sans Flex", "Google Sans Text", "Google Sans", Roboto, Arial, sans-serif);
-  color: #444746;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  background: transparent;
+  border: 1px solid #e0e0e0;
+  min-height: 32px;
+  /* Removed conflicting styles that were overriding WeekView.tsx */
+}
+
+.weekview-header-cell span:first-child {
   text-transform: uppercase;
-  font-weight: 500;
+  font-weight: 400; /* Not bold */
+  font-size: 13px; /* Smaller font for day name */
+  color: #888; /* Gray color for day name */
+  margin-bottom: 0;
+  text-align: center;
+  letter-spacing: "normal"; /* Corrected: should be a string literal */
+  line-height: 1.1;
+}
+
+.weekview-header-cell span:last-child {
+  font-weight: 400; /* Not bold */
+  font-size: 13px; /* Smaller font for date */
+  width: 28px;
+  height: 28px;
+  line-height: 28px;
+  text-align: center;
+  display: inline-block;
+  margin-top: 0; /* No margin between day and date */
+  margin-bottom: 0;
+  transition: background 0.2s;
+  /* Colors for non-today will be set inline in React */
 }
 
 .weekview-time-cell {
-  color: #888;
-  font-size: 13px;
-  text-align: center;
-  padding-right: 0;
-  border-bottom: 1px solid #e0e0e0;
-  border-right: 1px solid #e0e0e0;
-  background: #fafbfc;
-  line-height: 56px;
-  box-sizing: border-box;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  /* center horizontally */
-  min-height: 56px;
+  position: relative;
+  color: #888; /* Gray color for time */
+  font-size: 13px; /* Smaller font for time */
+  text-align: left;
+  height: 56px; /* hourHeight */
+  font-weight: 400;
+  text-transform: lowercase;
+  background: transparent;
+  border: none;
+  /* Removed conflicting styles that were overriding WeekView.tsx */
+}
+
+.weekview-time-cell span {
+  position: absolute;
+  top: 0px; /* Position at the very top of the cell */
+  left: 8px; /* Padding from the left edge */
+  transform: translateY(
+    -50%
+  ); /* Adjust for perfect vertical centering relative to the top edge */
+  width: calc(100% - 8px); /* Span full width minus left padding */
 }
 
 .weekview-day-col {
@@ -472,7 +525,6 @@ h2 {
   overflow: hidden;
   text-overflow: ellipsis;
   font-family: "Google Sans", Roboto, Arial, sans-serif;
-
 }
 
 .monthview-body {
@@ -481,11 +533,11 @@ h2 {
   grid-template-rows: repeat(6, 130px);
   gap: 0;
   width: 100%;
-   border-radius: 8px;
+  border-radius: 8px;
 }
 
 .monthview-body .monthview-td {
-   border: 1px solid #dde3ea;
+  border: 1px solid #dde3ea;
   min-height: 80px;
   background: #fafbfc;
   padding: 4px 2px 2px 2px;
@@ -625,7 +677,6 @@ h2 {
   margin-inline: 2px;
 }
 
-
 .button-arrow .weekview-nav-btn svg path,
 .button-arrow .monthview-nav-btn svg path {
   fill: #444746;
@@ -643,17 +694,227 @@ h2 {
 .weekview-time-cell span {
   color: #444746;
   font-family: "Google Sans", Roboto, Arial, sans-serif;
-  font-size: .6875rem;
+  font-size: 0.6875rem;
   font-weight: 500;
-}@media only screen and (max-width: 600px) {
+}
+@media only screen and (max-width: 600px) {
   .head_section {
-    display: flex
-;
+    display: flex;
     justify-content: flex-start;
     align-items: flex-start;
     flex-direction: column;
     gap: 10px;
-}.button-arrow {
-    margin-inline: 0;margin-right: 10px;
-}.monthview-title{font: 400 20px / 28px "Google Sans", Roboto, Arial, sans-serif;}
+  }
+  .button-arrow {
+    margin-inline: 0;
+    margin-right: 10px;
+  }
+  .monthview-title {
+    font: 400 20px / 28px "Google Sans", Roboto, Arial, sans-serif;
+  }
+}
+
+/* WeekView Specific Styles (Refactored from WeekView.tsx) */
+
+.head_section {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.weekview-toggle-container {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.weekview-toggle-btn {
+  border: none;
+  border-radius: 4px;
+  padding: 4px 12px;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.weekview-toggle-btn.active {
+  background: #1976d2;
+  color: #fff;
+}
+
+.weekview-toggle-btn.inactive {
+  background: #e0e0e0;
+  color: #222;
+}
+
+.weekview-toggle-btn-left {
+  margin-right: 4px;
+}
+
+.weekview-grid {
+  /* gridTemplateRows is dynamic and remains inline */
+  position: relative;
+  border-radius: 8px;
+  overflow: hidden;
+  border: 1px solid #e0e0e0;
+  background: #fff;
+  margin-top: 20px;
+  display: grid; /* Keep display: grid here */
+  grid-template-columns: 60px repeat(7, 1fr); /* Keep grid-template-columns here */
+}
+
+.weekview-time-indicator {
+  position: absolute;
+  left: 60px; /* width of time column */
+  right: 0;
+  /* top is dynamic and remains inline */
+  height: 4px;
+  background: #000;
+  z-index: 20;
+  pointer-events: none;
+  display: flex;
+  align-items: center;
+}
+
+.weekview-time-indicator-line {
+  position: absolute;
+  width: 1px;
+  height: 8px;
+  background: #000;
+}
+
+.weekview-time-indicator-line-left {
+  left: 0;
+  top: -2px;
+}
+
+.weekview-time-indicator-line-right {
+  right: 0;
+  top: -2px;
+}
+
+.weekview-time-indicator-label {
+  position: absolute;
+  left: -54px;
+  top: -10px;
+  color: #000;
+  font-weight: 700;
+  font-size: 13px;
+  background: transparent;
+  padding: 0 4px;
+  border-radius: 4px;
+  z-index: 21;
+}
+
+.weekview-header-empty {
+  grid-column: 1 / 2;
+  grid-row: 1 / 2;
+  background: #fff;
+  border-right: 1px solid #e0e0e0;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.weekview-empty-time-spacer {
+  background: #fff;
+}
+
+.weekview-empty-day-spacer {
+  background: #fff;
+  border-left: 1px solid #e0e0e0; /* Add left border to separate from time spacer */
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.weekview-header-cell {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  background: transparent;
+  border: none;
+  min-height: 32px; /* Ensure enough space */
+}
+
+.weekview-header-cell span:first-child {
+  text-transform: uppercase;
+  font-weight: 400; /* Not bold */
+  font-size: 13px; /* Smaller font for day name */
+  color: #888; /* Gray color for day name */
+  margin-bottom: 0; /* No gap between day and date */
+  text-align: center;
+  letter-spacing: "normal";
+  line-height: 1.1;
+}
+
+.weekview-header-cell span:last-child {
+  font-weight: 400;
+  font-size: 13px;
+  width: 28px;
+  height: 28px;
+  line-height: "28px"; /* Center text vertically in circle */
+  text-align: center;
+  display: inline-block;
+  margin-top: 0; /* No margin between day and date */
+  margin-bottom: 0;
+  transition: background 0.2s;
+  /* Dynamic styles for color, background, borderRadius remain inline */
+}
+
+.weekview-time-cell {
+  position: relative; /* For absolute positioning of span */
+  color: #888; /* Lighter color */
+  font-size: 13px; /* Smaller font */
+  text-align: left;
+  padding-left: 0; /* No padding on cell itself */
+  /* height is dynamic and remains inline */
+  font-weight: 400;
+  text-transform: lowercase;
+  background: transparent;
+  border: none;
+}
+
+.weekview-time-cell span {
+  position: absolute;
+  top: 0; /* Position at the very top of the cell */
+  left: 8px; /* Padding from the left edge of the time column */
+  transform: translateY(
+    -50%
+  ); /* Adjust for perfect vertical centering relative to the top edge */
+  width: calc(100% - 8px); /* Span full width minus left padding */
+}
+
+.weekview-day-col {
+  position: relative;
+  background: #fff;
+  border-left: 1px solid #e0e0e0;
+  border-bottom: 1px solid #e0e0e0;
+  box-sizing: border-box;
+  /* minHeight is dynamic and remains inline */
+}
+
+.weekview-multiday-event-container {
+  position: absolute;
+  top: 2px;
+  left: 0;
+  right: 0;
+  z-index: 4;
+}
+
+.weekview-event-multiday {
+  position: relative; /* Keep this to position inside flex container */
+  height: 22px;
+  background: #1a73e8;
+  color: #fff;
+  font-weight: 500;
+  font-size: 0.95em;
+  padding: 2px 8px;
+  margin-bottom: 2px;
+  overflow: hidden;
+  z-index: 4;
+  /* top, left, right, border-radius are dynamic and remain inline */
+}
+
+.weekview-timed-event-container {
+  position: relative;
+  z-index: 3;
+  /* marginTop is dynamic and remains inline */
 }

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import type { Event } from "../types";
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faAngleLeft,faAngleRight } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faAngleLeft, faAngleRight } from "@fortawesome/free-solid-svg-icons";
 
 interface WeekViewProps {
   events: Event[];
@@ -10,20 +10,35 @@ interface WeekViewProps {
 
 const HOURS = Array.from({ length: 24 }, (_, i) => i);
 
-const getTimeLabel = (hour: number) => {
-  const ampm = hour < 12 ? "AM" : "PM";
-  const displayHour = hour === 0 ? 12 : hour > 12 ? hour - 12 : hour;
-  return `${displayHour} ${ampm}`;
+const getTimeLabel = (hour: number, format: "12h" | "24h") => {
+  if (format === "24h") {
+    return `${hour.toString().padStart(2, "0")}:00`;
+  } else {
+    const ampm = hour < 12 ? "AM" : "PM";
+    const displayHour = hour === 0 ? 12 : hour > 12 ? hour - 12 : hour;
+    return `${displayHour}:00${ampm.toLowerCase()}`;
+  }
 };
 
-const formatTime = (dateStr: string | null | undefined) => {
+const formatTime = (
+  dateStr: string | null | undefined,
+  format: "12h" | "24h"
+) => {
   if (!dateStr) return "";
   const date = new Date(dateStr);
-  return date.toLocaleTimeString([], {
-    hour: "2-digit",
-    minute: "2-digit",
-    hour12: true,
-  });
+  if (format === "24h") {
+    return date.toLocaleTimeString([], {
+      hour: "2-digit",
+      minute: "2-digit",
+      hour12: false,
+    });
+  } else {
+    return date.toLocaleTimeString([], {
+      hour: "2-digit",
+      minute: "2-digit",
+      hour12: true,
+    });
+  }
 };
 
 const getMonday = (date: Date) => {
@@ -81,10 +96,20 @@ const WeekView: React.FC<WeekViewProps> = ({ events, onSwitchView }) => {
   const [currentWeek, setCurrentWeek] = useState<Date[]>(
     generateWeekArray(getMonday(new Date()))
   );
+  const [now, setNow] = useState(new Date());
+  const [timeFormat, setTimeFormat] = useState<"12h" | "24h">("12h");
 
   useEffect(() => {
     setCurrentWeek(generateWeekArray(currentMonday));
   }, [currentMonday]);
+
+  // Add timer to update 'now' every minute
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setNow(new Date());
+    }, 60000);
+    return () => clearInterval(interval);
+  }, []);
 
   const navigateToNextWeek = () => {
     const nextMonday = new Date(currentMonday);
@@ -127,55 +152,165 @@ const WeekView: React.FC<WeekViewProps> = ({ events, onSwitchView }) => {
 
   return (
     <div>
-       <div className="head_section">
-      {/* Toolbar */}
-      <div className="weekview-toolbar">
-        <button onClick={handleToday} className="weekview-nav-btn">
-          today
-        </button>
-        <span className="button-arrow">
-        <button onClick={navigateToPreviousWeek} className="weekview-nav-btn">
-        <FontAwesomeIcon icon={faAngleLeft} />
-        </button>
-         <button onClick={navigateToNextWeek} className="weekview-nav-btn">
-        <FontAwesomeIcon icon={faAngleRight} />
-        </button>
-        </span>
-        
-        <h2 className="weekview-title">{formatWeekRange()}</h2>
-       
-      </div>
-      {/* Switch buttons */}
-      <div className="weekview-switch">
-        <button
-          className="weekview-switch-btn weekview-switch-month"
-          onClick={() => onSwitchView("month")}
-        >
-          month
-        </button>
-        <button className="weekview-switch-btn weekview-switch-week" disabled>
-          week
-        </button>
-      </div>
+      <div className="head_section">
+        {/* Toolbar */}
+        <div className="weekview-toolbar">
+          <button onClick={handleToday} className="weekview-nav-btn">
+            today
+          </button>
+          <span className="button-arrow">
+            <button
+              onClick={navigateToPreviousWeek}
+              className="weekview-nav-btn"
+            >
+              <FontAwesomeIcon icon={faAngleLeft} />
+            </button>
+            <button onClick={navigateToNextWeek} className="weekview-nav-btn">
+              <FontAwesomeIcon icon={faAngleRight} />
+            </button>
+          </span>
+
+          <h2 className="weekview-title">{formatWeekRange()}</h2>
+        </div>
+        {/* 12h/24h Toggle */}
+        <div className="weekview-toggle-container">
+          <button
+            onClick={() => setTimeFormat("12h")}
+            className={`weekview-toggle-btn weekview-toggle-btn-left ${
+              timeFormat === "12h" ? "active" : "inactive"
+            }`}
+          >
+            12h
+          </button>
+          <button
+            onClick={() => setTimeFormat("24h")}
+            className={`weekview-toggle-btn ${
+              timeFormat === "24h" ? "active" : "inactive"
+            }`}
+          >
+            24h
+          </button>
+        </div>
+        {/* Switch buttons */}
+        <div className="weekview-switch">
+          <button className="weekview-switch-btn weekview-switch-week" disabled>
+            week
+          </button>
+          <button
+            className="weekview-switch-btn weekview-switch-month"
+            onClick={() => onSwitchView("month")}
+          >
+            month
+          </button>
+        </div>
       </div>
       {/* Week View Grid */}
       <div
         className="weekview-grid"
         style={{
-          gridTemplateRows: `32px repeat(24, ${hourHeight}px)`,
+          gridTemplateRows: `60px 30px repeat(24, ${hourHeight}px)` /* Adjusted for empty row */,
         }}
       >
+        {/* Current time indicator across the whole week */}
+        {(() => {
+          // Only show if today is in the current week
+          const today = new Date();
+          const weekStart = currentWeek[0];
+          const weekEnd = currentWeek[6];
+          if (
+            today >=
+              new Date(
+                weekStart.getFullYear(),
+                weekStart.getMonth(),
+                weekStart.getDate()
+              ) &&
+            today <=
+              new Date(
+                weekEnd.getFullYear(),
+                weekEnd.getMonth(),
+                weekEnd.getDate(),
+                23,
+                59,
+                59
+              )
+          ) {
+            const minutes = now.getHours() * 60 + now.getMinutes();
+            const top = 60 + 30 + (minutes / 60) * hourHeight; // Adjusted for header row and new empty row
+            return (
+              <>
+                <div
+                  className="weekview-time-indicator"
+                  style={{
+                    top: top,
+                  }}
+                >
+                  {/* Left vertical line */}
+                  <div className="weekview-time-indicator-line weekview-time-indicator-line-left" />
+                  {/* Right vertical line */}
+                  <div className="weekview-time-indicator-line weekview-time-indicator-line-right" />
+                  {/* Time label (next to bar) */}
+                  <span className="weekview-time-indicator-label">
+                    {formatTime(now.toISOString(), timeFormat)}
+                  </span>
+                </div>
+              </>
+            );
+          }
+          return null;
+        })()}
         {/* Weekday header row */}
         <div className="weekview-header-empty" />
-        {["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"].map((d) => (
-          <div key={d} className="weekview-header-cell">
-            {d}
-          </div>
-        ))}
+        {/* Empty row for spacing (newly added), now with white background */}
+        <div
+          className="weekview-empty-time-spacer"
+          style={{ gridColumn: "1 / 2", gridRow: "2 / 3" }}
+        />
+        <div
+          className="weekview-empty-day-spacer"
+          style={{ gridColumn: "2 / span 7", gridRow: "2 / 3" }}
+        />
+
+        {["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"].map((d, i) => {
+          const isToday =
+            currentWeek[i] &&
+            new Date().toDateString() === currentWeek[i].toDateString();
+          return (
+            <div
+              key={d}
+              className="weekview-header-cell"
+              style={{
+                gridColumn: `${i + 2} / ${i + 3}`,
+                gridRow: "1 / 2",
+              }}
+            >
+              <span className="weekview-header-cell-day-name">{d}</span>
+              <span
+                className="weekview-header-cell-date-number"
+                style={{
+                  color: isToday ? "#fff" : "#888",
+                  background: isToday ? "#1976d2" : "transparent",
+                  borderRadius: isToday ? "50%" : "none",
+                }}
+              >
+                {currentWeek[i]?.getDate()}
+              </span>
+            </div>
+          );
+        })}
         {/* Time column (hours) */}
         {HOURS.map((h) => (
-          <div key={h} className="weekview-time-cell">
-            <span>{getTimeLabel(h)}</span>
+          <div
+            key={h}
+            className="weekview-time-cell"
+            style={{
+              gridColumn: "1 / 2",
+              gridRow: `${h + 3} / ${h + 4}` /* Adjusted for new empty row */,
+              height: hourHeight,
+            }}
+          >
+            <span className="weekview-time-cell-label">
+              {getTimeLabel(h, timeFormat).toLowerCase()}
+            </span>
           </div>
         ))}
         {/* Day columns (hour cells + events) */}
@@ -187,7 +322,7 @@ const WeekView: React.FC<WeekViewProps> = ({ events, onSwitchView }) => {
             }`}
             style={{
               gridColumn: `${dayIdx + 2} / ${dayIdx + 3}`,
-              gridRow: `2 / span 24`,
+              gridRow: `3 / span 24` /* Adjusted for new empty row */,
               minHeight: hourHeight * 24,
             }}
           >
@@ -200,15 +335,7 @@ const WeekView: React.FC<WeekViewProps> = ({ events, onSwitchView }) => {
               />
             ))}
             {/* Multi-day event bars stacked at the top below the date */}
-            <div
-              style={{
-                position: "absolute",
-                top: 2,
-                left: 0,
-                right: 0,
-                zIndex: 4,
-              }}
-            >
+            <div className="weekview-multiday-event-container">
               {events
                 .filter((event) => {
                   const start = getEventStart(event);
@@ -232,23 +359,13 @@ const WeekView: React.FC<WeekViewProps> = ({ events, onSwitchView }) => {
                       key={event.id}
                       className="weekview-event weekview-event-multiday"
                       style={{
-                        position: "relative",
                         top: idx * 26,
                         left: isFirstDay ? 2 : 0,
                         right: isLastDay ? 2 : 0,
-                        height: 22,
                         borderTopLeftRadius: isFirstDay ? 2 : 0,
                         borderBottomLeftRadius: isFirstDay ? 2 : 0,
                         borderTopRightRadius: isLastDay ? 2 : 0,
                         borderBottomRightRadius: isLastDay ? 2 : 0,
-                        background: "#1a73e8",
-                        color: "#fff",
-                        fontWeight: 500,
-                        fontSize: "0.95em",
-                        padding: "2px 8px",
-                        marginBottom: 2,
-                        overflow: "hidden",
-                        zIndex: 4,
                       }}
                     >
                       {event.summary}
@@ -258,9 +375,8 @@ const WeekView: React.FC<WeekViewProps> = ({ events, onSwitchView }) => {
             </div>
             {/* Timed/single-day events */}
             <div
+              className="weekview-timed-event-container"
               style={{
-                position: "relative",
-                zIndex: 3,
                 marginTop: (() => {
                   // Count multi-day events for this day to offset single events
                   const multiDayCount = events.filter((event) => {
@@ -332,7 +448,7 @@ const WeekView: React.FC<WeekViewProps> = ({ events, onSwitchView }) => {
 
                   return (
                     <div
-                      key={event.id+ idx}
+                      key={event.id + idx}
                       className="weekview-event"
                       style={{
                         top,
@@ -345,8 +461,12 @@ const WeekView: React.FC<WeekViewProps> = ({ events, onSwitchView }) => {
                         {event.summary}
                       </div>
                       <div className="weekview-event-time">
-                        {event.startTime ? formatTime(event.startTime) : ""}
-                        {event.endTime ? " - " + formatTime(event.endTime) : ""}
+                        {event.startTime
+                          ? formatTime(event.startTime, timeFormat)
+                          : ""}
+                        {event.endTime
+                          ? " - " + formatTime(event.endTime, timeFormat)
+                          : ""}
                       </div>
                     </div>
                   );
