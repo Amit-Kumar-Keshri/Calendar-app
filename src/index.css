@@ -2,7 +2,7 @@
 
 body {
   margin: 0;
-  font-family: "Segoe UI", Arial, sans-serif;
+  font-family: "Inter", sans-serif;
   background: #f4f6fa;
   color: #222;
 }
@@ -110,11 +110,7 @@ h2 {
   text-transform: capitalize;
   font-family: var(
     --gm3-button-outlined-label-text-font,
-    "Google Sans Flex",
-    "Google Sans Text",
-    "Google Sans",
-    Roboto,
-    Arial,
+    "Inter",
     sans-serif
   );
 }
@@ -128,7 +124,7 @@ h2 {
   flex: 1;
   text-align: center;
   margin: 0;
-  font: 400 22px / 28px "Google Sans", Roboto, Arial, sans-serif;
+  font: 400 22px / 28px "Inter", sans-serif;
 }
 
 .monthview-table .th {
@@ -142,11 +138,7 @@ h2 {
   line-height: 32px;
   font-family: var(
     --gm3-button-outlined-label-text-font,
-    "Google Sans Flex",
-    "Google Sans Text",
-    "Google Sans",
-    Roboto,
-    Arial,
+    "Inter",
     sans-serif
   );
   color: #444746;
@@ -195,7 +187,7 @@ h2 {
   font-weight: 500;
   margin-bottom: 2px;
   color: #444746;
-  font-family: "Google Sans", Roboto, Arial, sans-serif;
+  font-family: "Inter", sans-serif;
   font-size: 16px;
   text-align: center;
 }
@@ -295,11 +287,7 @@ h2 {
   text-transform: capitalize;
   font-family: var(
     --gm3-button-outlined-label-text-font,
-    "Google Sans Flex",
-    "Google Sans Text",
-    "Google Sans",
-    Roboto,
-    Arial,
+    "Inter",
     sans-serif
   );
 }
@@ -313,7 +301,7 @@ h2 {
   flex: 1;
   text-align: center;
   margin: 0;
-  font: 400 22px / 28px "Google Sans", Roboto, Arial, sans-serif;
+  font: 400 22px / 28px "Inter", sans-serif;
 }
 
 .weekview-switch {
@@ -474,14 +462,14 @@ h2 {
 
 .weekview-event-title {
   font-weight: 500;
-  font-family: "Google Sans", Roboto, Arial, sans-serif;
+  font-family: "Inter", sans-serif;
   font-size: 13px;
 }
 
 .weekview-event-time {
   font-size: 0.9em;
   color: #1f1f1f;
-  font-family: "Google Sans", Roboto, Arial, sans-serif;
+  font-family: "Inter", sans-serif;
   font-size: 13px;
 }
 
@@ -524,7 +512,7 @@ h2 {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  font-family: "Google Sans", Roboto, Arial, sans-serif;
+  font-family: "Inter", sans-serif;
 }
 
 .monthview-body {
@@ -568,7 +556,7 @@ h2 {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  font-family: "Google Sans", Roboto, Arial, sans-serif;
+  font-family: "Inter", sans-serif;
   font-weight: 500;
 }
 
@@ -583,7 +571,7 @@ h2 {
   margin-top: 2px;
   margin-bottom: 2px;
   transition: background 0.2s;
-  font-family: "Google Sans", Roboto, Arial, sans-serif;
+  font-family: "Inter", sans-serif;
   font-weight: 500;
 }
 
@@ -693,7 +681,7 @@ h2 {
 
 .weekview-time-cell span {
   color: #444746;
-  font-family: "Google Sans", Roboto, Arial, sans-serif;
+  font-family: "Inter", sans-serif;
   font-size: 0.6875rem;
   font-weight: 500;
 }
@@ -710,7 +698,7 @@ h2 {
     margin-right: 10px;
   }
   .monthview-title {
-    font: 400 20px / 28px "Google Sans", Roboto, Arial, sans-serif;
+    font: 400 20px / 28px "Inter", sans-serif;
   }
 }
 
