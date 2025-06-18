@@ -158,6 +158,7 @@ const WeekView: React.FC<WeekViewProps> = ({ events, onSwitchView }) => {
           <button onClick={handleToday} className="weekview-nav-btn">
             today
           </button>
+          <h2 className="weekview-title">{formatWeekRange()}</h2>
           <span className="button-arrow">
             <button
               onClick={navigateToPreviousWeek}
@@ -169,39 +170,42 @@ const WeekView: React.FC<WeekViewProps> = ({ events, onSwitchView }) => {
               <FontAwesomeIcon icon={faAngleRight} />
             </button>
           </span>
-
-          <h2 className="weekview-title">{formatWeekRange()}</h2>
         </div>
         {/* 12h/24h Toggle */}
-        <div className="weekview-toggle-container">
-          <button
-            onClick={() => setTimeFormat("12h")}
-            className={`weekview-toggle-btn weekview-toggle-btn-left ${
-              timeFormat === "12h" ? "active" : "inactive"
-            }`}
-          >
-            12h
-          </button>
-          <button
-            onClick={() => setTimeFormat("24h")}
-            className={`weekview-toggle-btn ${
-              timeFormat === "24h" ? "active" : "inactive"
-            }`}
-          >
-            24h
-          </button>
-        </div>
-        {/* Switch buttons */}
-        <div className="weekview-switch">
-          <button className="weekview-switch-btn weekview-switch-week" disabled>
-            week
-          </button>
-          <button
-            className="weekview-switch-btn weekview-switch-month"
-            onClick={() => onSwitchView("month")}
-          >
-            month
-          </button>
+        <div className="right-view">
+          <div className="weekview-toggle-container">
+            <button
+              onClick={() => setTimeFormat("12h")}
+              className={`weekview-toggle-btn weekview-toggle-btn-left ${
+                timeFormat === "12h" ? "active" : "inactive"
+              }`}
+            >
+              12h
+            </button>
+            <button
+              onClick={() => setTimeFormat("24h")}
+              className={`weekview-toggle-btn ${
+                timeFormat === "24h" ? "active" : "inactive"
+              }`}
+            >
+              24h
+            </button>
+          </div>
+          {/* Switch buttons */}
+          <div className="weekview-switch">
+            <button
+              className="weekview-switch-btn weekview-switch-week"
+              disabled
+            >
+              week
+            </button>
+            <button
+              className="weekview-switch-btn weekview-switch-month"
+              onClick={() => onSwitchView("month")}
+            >
+              month
+            </button>
+          </div>
         </div>
       </div>
       {/* Week View Grid */}
@@ -288,7 +292,7 @@ const WeekView: React.FC<WeekViewProps> = ({ events, onSwitchView }) => {
                 className="weekview-header-cell-date-number"
                 style={{
                   color: isToday ? "#fff" : "#888",
-                  background: isToday ? "#000" : "transparent",
+                  background: isToday ? "#292929" : "transparent",
                   borderRadius: isToday ? "50%" : "none",
                 }}
               >
