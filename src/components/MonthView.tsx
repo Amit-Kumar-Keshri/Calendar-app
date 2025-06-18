@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import type { Event } from "../types";
 import { getMonthDays } from "../utils/dateTime";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -70,6 +70,13 @@ const MonthView: React.FC<MonthViewProps> = ({ events, onSwitchView }) => {
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
   const [currentDate, setCurrentDate] = useState<Date>(new Date());
   const [popupIdx, setPopupIdx] = useState<number | null>(null);
+  const [windowWidth, setWindowWidth] = useState(window.innerWidth);
+
+  useEffect(() => {
+    const handleResize = () => setWindowWidth(window.innerWidth);
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
 
   const monthDays = getMonthDays({ currentDate, selectedDate });
   // console.log(monthDays);
@@ -177,17 +184,29 @@ const MonthView: React.FC<MonthViewProps> = ({ events, onSwitchView }) => {
                   <div className="monthview-date">{day.date}</div>
                   {/* Show up to 3 events (all-day/multi-day first, then timed) */}
                   <div className="single-day-event-cover">
-                    {dayEvents.slice(0, 3).map((event, i) => (
-                      <div className="single-day-event" key={event.id || i}>
-                        {/* Show time for timed events */}
-                        {event.start.dateTime && (
-                          <span className="mr-1">
-                            {formatTime(event.start.dateTime)}
-                          </span>
-                        )}
-                        {event.summary || event.title || `Event ${i + 1}`}
-                      </div>
-                    ))}
+                    {windowWidth < 640
+                      ? dayEvents.length > 0 && (
+                          <div
+                            className="event-dot"
+                            onClick={() => setPopupIdx(idx)}
+                            style={{
+                              cursor: "pointer",
+                              display: "inline-block",
+                            }}
+                          >
+                            ●
+                          </div>
+                        )
+                      : dayEvents.slice(0, 3).map((event, i) => (
+                          <div className="single-day-event" key={event.id || i}>
+                            {event.start.dateTime && (
+                              <span className="mr-1">
+                                {formatTime(event.start.dateTime)}
+                              </span>
+                            )}
+                            {event.summary || event.title || `Event ${i + 1}`}
+                          </div>
+                        ))}
 
                     {/* Show "+N more" if more than 3 events */}
                     {dayEvents.length > 3 && (
