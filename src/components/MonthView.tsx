@@ -1,23 +1,20 @@
 import React, { useState } from "react";
 import type { Event } from "../types";
 import { getMonthDays } from "../utils/dateTime";
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faAngleLeft,faAngleRight } from '@fortawesome/free-solid-svg-icons';
-
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faAngleLeft, faAngleRight } from "@fortawesome/free-solid-svg-icons";
 
 interface MonthViewProps {
   events: Event[];
   onSwitchView: (view: "month" | "week") => void;
 }
 
-
-
 const getEventStart = (event: Event) =>
   event.start.dateTime
     ? new Date(event.start.dateTime)
     : event.start.date
-      ? new Date(event.start.date)
-      : null;
+    ? new Date(event.start.date)
+    : null;
 
 const getEventEnd = (event: Event) => {
   if (event.end.dateTime) return new Date(event.end.dateTime);
@@ -94,8 +91,6 @@ const MonthView: React.FC<MonthViewProps> = ({ events, onSwitchView }) => {
     setSelectedDate(today);
   };
 
-
-
   const totalEventsinDay = (date: Date): Event[] => {
     return events.filter((event) => {
       const start = getEventStart(event);
@@ -112,6 +107,9 @@ const MonthView: React.FC<MonthViewProps> = ({ events, onSwitchView }) => {
           <button onClick={handleToday} className="monthview-nav-btn">
             today
           </button>
+          <h2 className="monthview-title">
+            {getMonthName(currentDate)} {currentDate.getFullYear()}{" "}
+          </h2>
           <span className="button-arrow">
             <button onClick={handlePreviousMonth} className="monthview-nav-btn">
               <FontAwesomeIcon icon={faAngleLeft} />
@@ -120,9 +118,6 @@ const MonthView: React.FC<MonthViewProps> = ({ events, onSwitchView }) => {
               <FontAwesomeIcon icon={faAngleRight} />
             </button>
           </span>
-          <h2 className="monthview-title">
-            {getMonthName(currentDate)} {currentDate.getFullYear()}{" "}
-          </h2>
         </div>
         <div className="monthview-switch">
           <button
@@ -181,33 +176,29 @@ const MonthView: React.FC<MonthViewProps> = ({ events, onSwitchView }) => {
                 >
                   <div className="monthview-date">{day.date}</div>
                   {/* Show up to 3 events (all-day/multi-day first, then timed) */}
-                  {dayEvents.slice(0, 3).map((event, i) => (
-                    <div className="single-day-event" key={event.id || i}>
-                      {/* Show time for timed events */}
-                      {event.start.dateTime && (
-                        <span
-                          className="mr-1"
-                          style={{
-                            marginLeft: 0,
-                            color: "#fff",
-                            fontSize: "0.92em",
-                          }}
-                        >
-                          {formatTime(event.start.dateTime)}
-                        </span>
-                      )}
-                      {event.summary || event.title || `Event ${i + 1}`}
-                    </div>
-                  ))}
-                  {/* Show "+N more" if more than 3 events */}
-                  {dayEvents.length > 3 && (
-                    <div
-                      className="monthview-more-link"
-                      onClick={() => setPopupIdx(idx)}
-                    >
-                      +{dayEvents.length - 3} more
-                    </div>
-                  )}
+                  <div className="single-day-event-cover">
+                    {dayEvents.slice(0, 3).map((event, i) => (
+                      <div className="single-day-event" key={event.id || i}>
+                        {/* Show time for timed events */}
+                        {event.start.dateTime && (
+                          <span className="mr-1">
+                            {formatTime(event.start.dateTime)}
+                          </span>
+                        )}
+                        {event.summary || event.title || `Event ${i + 1}`}
+                      </div>
+                    ))}
+
+                    {/* Show "+N more" if more than 3 events */}
+                    {dayEvents.length > 3 && (
+                      <div
+                        className="monthview-more-link"
+                        onClick={() => setPopupIdx(idx)}
+                      >
+                        +{dayEvents.length - 3} more
+                      </div>
+                    )}
+                  </div>
                   {/* Popup for all events */}
                   {showPopup && (
                     <div className="monthview-popup">
@@ -228,14 +219,7 @@ const MonthView: React.FC<MonthViewProps> = ({ events, onSwitchView }) => {
                       {dayEvents.map((event, i) => (
                         <div className="popup-event" key={event.id || i}>
                           {event.start.dateTime && (
-                            <span
-                              className="mr-1"
-                              style={{
-                                marginLeft: 4,
-                                color: "#fff",
-                                fontSize: "0.92em",
-                              }}
-                            >
+                            <span className="mr-1">
                               {formatTime(event.start.dateTime)}
                             </span>
                           )}

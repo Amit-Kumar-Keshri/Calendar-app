@@ -20,7 +20,7 @@ button {
 }
 
 button:hover {
-  background: #1565c0;
+  background: #292929;
   color: #fff;
 }
 
@@ -29,8 +29,8 @@ h2 {
 }
 
 .calendar-container {
-  max-width: 1100px;
-  margin: 32px auto;
+  max-width: 100%;
+  margin: 0 auto;
   background: #fff;
   border-radius: 8px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.07);
@@ -44,7 +44,7 @@ h2 {
   margin-bottom: 8px;
 }
 
-.month-days > div {
+.month-days>div {
   margin-bottom: 2px;
 }
 
@@ -97,23 +97,7 @@ h2 {
   margin-bottom: 0;
 }
 
-.monthview-nav-btn {
-  background: transparent;
-  color: #2e3336;
-  border: 2px solid #e3e4e7;
-  border-radius: 4px;
-  padding: 6px 16px;
-  margin-right: 8px;
-  font-weight: 500;
-  font-size: 1rem;
-  cursor: pointer;
-  text-transform: capitalize;
-  font-family: var(
-    --gm3-button-outlined-label-text-font,
-    "Inter",
-    sans-serif
-  );
-}
+
 
 .monthview-nav-btn:last-child {
   margin-left: 8px;
@@ -121,29 +105,28 @@ h2 {
 }
 
 .monthview-title {
-  flex: 1;
-  text-align: center;
-  margin: 0;
-  font: 400 22px / 28px "Inter", sans-serif;
+  color: rgb(60, 62, 68);
+  font-family: "Inter", sans-serif;
+  font-weight: 600;
+  font-size: 16px;
 }
 
 .monthview-table .th {
   border: 1px solid #e0e0e0;
   padding: 8px 0;
-  background: #f7f7f7;
+  background: transparent;
   font-weight: 500;
   color: #222;
   text-align: center;
   font-size: 12px;
   line-height: 32px;
-  font-family: var(
-    --gm3-button-outlined-label-text-font,
-    "Inter",
-    sans-serif
-  );
+  font-family: var(--gm3-button-outlined-label-text-font, "Inter", sans-serif);
   color: #444746;
   text-transform: uppercase;
   font-weight: 500;
+  font-family: "Inter", sans-serif;
+  color: #070a0d;
+  font-weight: 700;
 }
 
 .monthview-table .tr {
@@ -179,17 +162,19 @@ h2 {
 }
 
 .monthview-td.monthview-other-month .monthview-date {
-  color: #bbb;
+  color: rgb(60, 62, 68);
   opacity: 0.7;
 }
 
 .monthview-date {
-  font-weight: 500;
-  margin-bottom: 2px;
-  color: #444746;
+  color: rgb(60, 62, 68);
   font-family: "Inter", sans-serif;
   font-size: 16px;
   text-align: center;
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 1.25rem;
+  font-family: "Inter", sans-serif;
 }
 
 .monthview-date.monthview-today {
@@ -245,28 +230,7 @@ h2 {
   margin: 0;
 }
 
-.monthview-switch-month {
-  background: #1976d2;
-  color: #fff;
-  border: 2px solid #1976d2;
-  text-transform: capitalize;
-}
 
-.monthview-switch-week {
-  background: #e0e0e0;
-  color: #222;
-  background: transparent;
-  color: #2e3336;
-  border: 2px solid #e3e4e7;
-  border-radius: 4px;
-  padding: 6px 16px;
-  margin-right: 8px;
-  font-weight: 500;
-  font-size: 1rem;
-  cursor: pointer;
-  text-transform: capitalize;
-  margin: 0;
-}
 
 .weekview-toolbar {
   display: flex;
@@ -275,21 +239,17 @@ h2 {
 }
 
 .weekview-nav-btn {
-  background: transparent;
-  color: #2e3336;
-  border: 2px solid #e3e4e7;
-  border-radius: 4px;
-  padding: 6px 16px;
-  margin-right: 8px;
-  font-weight: 500;
-  font-size: 1rem;
-  cursor: pointer;
+  border: 1px solid #e5e7eb;
+  background: #eeeff2;
+  border-radius: 6px;
+  color: rgb(60, 62, 68);
+  font-family: "Inter", sans-serif;
+  font-weight: 400;
+  font-size: 16px;
+  padding: 4px 6px;
   text-transform: capitalize;
-  font-family: var(
-    --gm3-button-outlined-label-text-font,
-    "Inter",
-    sans-serif
-  );
+  margin-right: 10px;
+  font-weight: 500;
 }
 
 .weekview-nav-btn:last-child {
@@ -304,13 +264,27 @@ h2 {
   font: 400 22px / 28px "Inter", sans-serif;
 }
 
-.weekview-switch {
-  margin-top: 0;
-  display: flex;
-  gap: 8px;
+.weekview-switch,
+.monthview-switch {
+  margin-left: 10px;
+  /* display: flex
+; */
+  /* gap: 8px; */
+  border: 1px solid #e5e7eb;
+  background: #eeeff2;
+  border-radius: 6px;
+  color: rgb(60, 62, 68);
+  font-family: "Inter", sans-serif;
+  font-weight: 400;
+  font-size: 16px;
+  padding: 4px 6px;
+  text-transform: capitalize;
+  /* margin-right: 10px; */
+  font-weight: 500;
 }
 
-.weekview-switch-btn {
+.weekview-switch-btn,
+.monthview-switch-btn {
   border: none;
   border-radius: 4px;
   padding: 6px 16px;
@@ -322,11 +296,8 @@ h2 {
 }
 
 .weekview-switch-month {
-  background: #e0e0e0;
-  color: #222;
   background: transparent;
   color: #2e3336;
-  border: 2px solid #e3e4e7;
   border-radius: 4px;
   padding: 6px 16px;
   margin-right: 8px;
@@ -335,13 +306,20 @@ h2 {
   cursor: pointer;
   text-transform: capitalize;
   margin: 0;
+  font-family: "Inter", sans-serif;
+  font-weight: 400;
+  font-size: 14px;
 }
 
 .weekview-switch-week {
-  background: #1976d2;
-  color: #fff;
+  background: #fff;
   cursor: default;
-  border: 2px solid #1976d2;
+  border: 1px solid #e5e7eb;
+  color: rgb(60, 62, 68);
+  font-family: "Inter", sans-serif;
+  font-weight: 400;
+  font-size: 14px;
+  border-radius: 6px;
 }
 
 .weekview-grid {
@@ -364,36 +342,44 @@ h2 {
 
 .weekview-header-cell {
   display: flex;
-  flex-direction: column;
+  /* flex-direction: column; */
+  flex-direction: row;
   align-items: center;
   justify-content: center;
   padding: 0;
   background: transparent;
   border: 1px solid #e0e0e0;
-  min-height: 32px;
+  /* min-height: 32px; */
   /* Removed conflicting styles that were overriding WeekView.tsx */
 }
 
 .weekview-header-cell span:first-child {
   text-transform: uppercase;
-  font-weight: 400; /* Not bold */
-  font-size: 13px; /* Smaller font for day name */
-  color: #888; /* Gray color for day name */
+  font-weight: 400;
+  /* Not bold */
+  font-size: 13px;
+  /* Smaller font for day name */
+  color: #888;
+  /* Gray color for day name */
   margin-bottom: 0;
   text-align: center;
-  letter-spacing: "normal"; /* Corrected: should be a string literal */
+  letter-spacing: "normal";
+  /* Corrected: should be a string literal */
   line-height: 1.1;
 }
 
 .weekview-header-cell span:last-child {
-  font-weight: 400; /* Not bold */
-  font-size: 13px; /* Smaller font for date */
+  font-weight: 400;
+  /* Not bold */
+  font-size: 13px;
+  /* Smaller font for date */
   width: 28px;
   height: 28px;
   line-height: 28px;
   text-align: center;
   display: inline-block;
-  margin-top: 0; /* No margin between day and date */
+  margin-top: 0;
+  /* No margin between day and date */
   margin-bottom: 0;
   transition: background 0.2s;
   /* Colors for non-today will be set inline in React */
@@ -401,10 +387,13 @@ h2 {
 
 .weekview-time-cell {
   position: relative;
-  color: #888; /* Gray color for time */
-  font-size: 13px; /* Smaller font for time */
+  color: #888;
+  /* Gray color for time */
+  font-size: 13px;
+  /* Smaller font for time */
   text-align: left;
-  height: 56px; /* hourHeight */
+  height: 56px;
+  /* hourHeight */
   font-weight: 400;
   text-transform: lowercase;
   background: transparent;
@@ -414,12 +403,14 @@ h2 {
 
 .weekview-time-cell span {
   position: absolute;
-  top: 0px; /* Position at the very top of the cell */
-  left: 8px; /* Padding from the left edge */
-  transform: translateY(
-    -50%
-  ); /* Adjust for perfect vertical centering relative to the top edge */
-  width: calc(100% - 8px); /* Span full width minus left padding */
+  top: 0px;
+  /* Position at the very top of the cell */
+  left: 8px;
+  /* Padding from the left edge */
+  transform: translateY(-50%);
+  /* Adjust for perfect vertical centering relative to the top edge */
+  width: calc(100% - 8px);
+  /* Span full width minus left padding */
 }
 
 .weekview-day-col {
@@ -447,17 +438,19 @@ h2 {
 .weekview-event {
   position: absolute;
   background: #e3f2fd;
-  color: #1976d2;
+  color: #292929;
+  background: transparent;
   margin: 2px;
   padding: 4px 6px;
-  border-radius: 2px;
   font-size: 0.95em;
   box-sizing: border-box;
   z-index: 2;
   overflow: hidden;
-  border: 1px solid #bbdefb;
+  border: 1px solid #292929;
   box-shadow: 0 1px 4px #0001;
   left: 0;
+  border-radius: 6px;
+  background: #fff;
 }
 
 .weekview-event-title {
@@ -518,7 +511,7 @@ h2 {
 .monthview-body {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
-  grid-template-rows: repeat(6, 130px);
+  grid-template-rows: repeat(6, 150px);
   gap: 0;
   width: 100%;
   border-radius: 8px;
@@ -527,7 +520,7 @@ h2 {
 .monthview-body .monthview-td {
   border: 1px solid #dde3ea;
   min-height: 80px;
-  background: #fafbfc;
+  background: transparent;
   padding: 4px 2px 2px 2px;
   box-sizing: border-box;
   position: relative;
@@ -558,12 +551,29 @@ h2 {
   text-overflow: ellipsis;
   font-family: "Inter", sans-serif;
   font-weight: 500;
+  padding: 2px 8px;
+  margin-bottom: 2px;
+  overflow: hidden;
+  z-index: 4;
+  border: 1px solid rgb(60, 62, 68);
+  background: #eeeff2;
+  border-radius: 6px;
+  color: rgb(60, 62, 68) !important;
+  font-family: "Inter", sans-serif;
+  font-weight: 400;
+  font-size: 14px !important;
+  text-transform: capitalize;
+
+  font-weight: 500;
+  background: transparent !important;
+  border-radius: 6px !important;
 }
 
 .monthview-more-link {
-  color: #1976d2;
-  background: #e3f2fd;
-  border-radius: 2px;
+  color: #3c3e44;
+  border: 1px solid #e5e7eb;
+  background: #eeeff2;
+  border-radius: 6px;
   font-size: 12px;
   padding: 1px 4px;
   cursor: pointer;
@@ -573,26 +583,31 @@ h2 {
   transition: background 0.2s;
   font-family: "Inter", sans-serif;
   font-weight: 500;
+  position: relative;
+  z-index: 9;
+  font-family: "Inter", sans-serif;
+  font-weight: 700;
+  font-size: 14px;
 }
 
 .monthview-more-link:hover {
-  background: #bbdefb;
-  text-decoration: underline;
+  color: #ffffff;
+  background: #3c3e44;
 }
 
 .monthview-popup {
   position: absolute;
-  top: 28px;
-  left: 0;
-  right: 0;
+  top: 25px;
+  left: 5px;
+  right: 6px;
   z-index: 10;
   background: #fff;
-  border: 1px solid #1976d2;
+  border: 1px solid #0002;
   border-radius: 6px;
   box-shadow: 0 2px 12px #0002;
   padding: 10px 8px 8px 8px;
   min-width: 140px;
-  max-width: 220px;
+  max-width: 100%;
   min-height: 32px;
   max-height: 220px;
   overflow-y: auto;
@@ -600,10 +615,11 @@ h2 {
 }
 
 .monthview-popup .popup-title {
-  font-weight: 600;
   margin-bottom: 6px;
-  color: #1976d2;
-  font-size: 1em;
+  color: rgb(60, 62, 68) !important;
+  font-family: "Inter", sans-serif;
+  font-weight: 700;
+  font-size: 14px !important;
 }
 
 .monthview-popup .popup-close {
@@ -612,21 +628,26 @@ h2 {
   right: 8px;
   background: none;
   border: none;
-  color: #888;
+  color: #292929;
   font-size: 1.1em;
   cursor: pointer;
 }
 
 .monthview-popup .popup-event {
-  background: #3079ce;
-  color: #fff;
-  border-radius: 3px;
-  padding: 2px 6px;
-  margin-bottom: 3px;
-  font-size: 0.97em;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  border-radius: 4px;
+  padding: 6px 16px;
+  margin-right: 8px;
+  text-transform: capitalize;
+  margin: 0;
+  font-family: "Inter", sans-serif;
+  font-weight: 400;
+  font-size: 14px;
+  background: #292929;
+  color: #fff;
+  margin-bottom: 3px;
 }
 
 .monthview-table .th:first-child {
@@ -643,13 +664,6 @@ h2 {
   align-items: center;
 }
 
-.weekview-switch-btn:hover,
-.weekview-switch-btn:focus,
-.monthview-switch-btn:hover,
-.monthview-switch-btn:focus {
-  border: 2px solid #1565c0;
-}
-
 .button-arrow {
   margin-inline: 20px;
 }
@@ -663,11 +677,14 @@ h2 {
   line-height: normal;
   margin: 0;
   margin-inline: 2px;
+  border-radius: 10px;
+  background: transparent;
+  padding: 0;
 }
 
 .button-arrow .weekview-nav-btn svg path,
 .button-arrow .monthview-nav-btn svg path {
-  fill: #444746;
+  fill: #6b7280;
 }
 
 .button-arrow .weekview-nav-btn:hover,
@@ -685,6 +702,7 @@ h2 {
   font-size: 0.6875rem;
   font-weight: 500;
 }
+
 @media only screen and (max-width: 600px) {
   .head_section {
     display: flex;
@@ -693,10 +711,12 @@ h2 {
     flex-direction: column;
     gap: 10px;
   }
+
   .button-arrow {
     margin-inline: 0;
     margin-right: 10px;
   }
+
   .monthview-title {
     font: 400 20px / 28px "Inter", sans-serif;
   }
@@ -713,13 +733,16 @@ h2 {
 .weekview-toggle-container {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 0;
+  border: 1px solid #e5e7eb;
+  background: #eeeff2;
+  border-radius: 10px;
 }
 
 .weekview-toggle-btn {
   border: none;
   border-radius: 4px;
-  padding: 4px 12px;
+  padding: 4px 6px;
   font-weight: 500;
   cursor: pointer;
 }
@@ -730,8 +753,11 @@ h2 {
 }
 
 .weekview-toggle-btn.inactive {
-  background: #e0e0e0;
-  color: #222;
+  background: transparent;
+  color: rgb(60, 62, 68);
+  font-family: "Inter", sans-serif;
+  font-weight: 400;
+  font-size: 14px;
 }
 
 .weekview-toggle-btn-left {
@@ -746,13 +772,16 @@ h2 {
   border: 1px solid #e0e0e0;
   background: #fff;
   margin-top: 20px;
-  display: grid; /* Keep display: grid here */
-  grid-template-columns: 60px repeat(7, 1fr); /* Keep grid-template-columns here */
+  display: grid;
+  /* Keep display: grid here */
+  grid-template-columns: 60px repeat(7, 1fr);
+  /* Keep grid-template-columns here */
 }
 
 .weekview-time-indicator {
   position: absolute;
-  left: 60px; /* width of time column */
+  left: 60px;
+  /* width of time column */
   right: 0;
   /* top is dynamic and remains inline */
   height: 4px;
@@ -807,27 +836,35 @@ h2 {
 
 .weekview-empty-day-spacer {
   background: #fff;
-  border-left: 1px solid #e0e0e0; /* Add left border to separate from time spacer */
+  border-left: 1px solid #e0e0e0;
+  /* Add left border to separate from time spacer */
   border-bottom: 1px solid #e0e0e0;
 }
 
 .weekview-header-cell {
   display: flex;
-  flex-direction: column;
+  /* flex-direction: column; */
+  flex-direction: row;
   align-items: center;
   justify-content: center;
   padding: 0;
   background: transparent;
   border: none;
-  min-height: 32px; /* Ensure enough space */
+  flex-direction: column;
+  /* min-height: 32px;  */
+  /* Ensure enough space */
 }
 
 .weekview-header-cell span:first-child {
   text-transform: uppercase;
-  font-weight: 400; /* Not bold */
-  font-size: 13px; /* Smaller font for day name */
-  color: #888; /* Gray color for day name */
-  margin-bottom: 0; /* No gap between day and date */
+  font-weight: 400;
+  /* Not bold */
+  font-size: 13px;
+  /* Smaller font for day name */
+  color: #888;
+  /* Gray color for day name */
+  margin-bottom: 0;
+  /* No gap between day and date */
   text-align: center;
   letter-spacing: "normal";
   line-height: 1.1;
@@ -838,21 +875,27 @@ h2 {
   font-size: 13px;
   width: 28px;
   height: 28px;
-  line-height: "28px"; /* Center text vertically in circle */
+  line-height: "28px";
+  /* Center text vertically in circle */
   text-align: center;
   display: inline-block;
-  margin-top: 0; /* No margin between day and date */
+  margin-top: 0;
+  /* No margin between day and date */
   margin-bottom: 0;
   transition: background 0.2s;
   /* Dynamic styles for color, background, borderRadius remain inline */
 }
 
 .weekview-time-cell {
-  position: relative; /* For absolute positioning of span */
-  color: #888; /* Lighter color */
-  font-size: 13px; /* Smaller font */
+  position: relative;
+  /* For absolute positioning of span */
+  color: #888;
+  /* Lighter color */
+  font-size: 13px;
+  /* Smaller font */
   text-align: left;
-  padding-left: 0; /* No padding on cell itself */
+  padding-left: 0;
+  /* No padding on cell itself */
   /* height is dynamic and remains inline */
   font-weight: 400;
   text-transform: lowercase;
@@ -862,12 +905,18 @@ h2 {
 
 .weekview-time-cell span {
   position: absolute;
-  top: 0; /* Position at the very top of the cell */
-  left: 8px; /* Padding from the left edge of the time column */
-  transform: translateY(
-    -50%
-  ); /* Adjust for perfect vertical centering relative to the top edge */
-  width: calc(100% - 8px); /* Span full width minus left padding */
+  top: 0;
+  /* Position at the very top of the cell */
+  left: 8px;
+  /* Padding from the left edge of the time column */
+  transform: translateY(-50%);
+  /* Adjust for perfect vertical centering relative to the top edge */
+  width: calc(100% - 8px);
+  /* Span full width minus left padding */
+  font-family: "Inter", sans-serif;
+  color: #a1a7b3;
+  font-weight: 600;
+  font-size: 12px;
 }
 
 .weekview-day-col {
@@ -888,8 +937,8 @@ h2 {
 }
 
 .weekview-event-multiday {
-  position: relative; /* Keep this to position inside flex container */
-  height: 22px;
+  position: relative;
+  height: 100%;
   background: #1a73e8;
   color: #fff;
   font-weight: 500;
@@ -898,11 +947,236 @@ h2 {
   margin-bottom: 2px;
   overflow: hidden;
   z-index: 4;
-  /* top, left, right, border-radius are dynamic and remain inline */
+  border: 1px solid rgb(60, 62, 68);
+  background: #eeeff2;
+  border-radius: 6px;
+  color: rgb(60, 62, 68) !important;
+  font-family: "Inter", sans-serif;
+  font-weight: 400;
+  font-size: 14px !important;
+  text-transform: capitalize;
+  margin-right: 10px;
+  font-weight: 500;
+  background: transparent !important;
+  border-radius: 6px !important;
 }
 
 .weekview-timed-event-container {
   position: relative;
   z-index: 3;
   /* marginTop is dynamic and remains inline */
+}
+
+.weekview-header-cell span:first-child,
+.weekview-header-cell span:last-child {
+  font-family: "Inter", sans-serif;
+  color: rgb(107, 114, 128);
+  font-weight: 700;
+}
+
+.weekview-header-cell span:last-child {
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.weekview-title {
+  color: rgb(60, 62, 68);
+  font-family: "Inter", sans-serif;
+  /* color: rgb(107, 114, 128); */
+  font-weight: 600;
+  font-size: 16px;
+}
+
+.weekview-header-cell span:first-child {
+  font-size: 12px
+}
+
+.weekview-nav-btn svg,
+.monthview-nav-btn svg {
+  font-weight: 400;
+  font-size: .875rem;
+}
+
+.right-view {
+  display: flex;
+  justify-content: center;
+}
+
+.weekview-toggle-btn.active {
+  background: #ffffff;
+  color: #fff;
+  border: 1px solid #e5e7eb;
+  color: rgb(60, 62, 68);
+  font-family: "Inter", sans-serif;
+  font-weight: 400;
+  font-size: 14px;
+  border-radius: 6px;
+}
+
+.weekview-toggle-btn:hover {
+  color: #070a0d;
+}
+
+.monthview-nav-btn {
+  border: 1px solid #e5e7eb;
+  background: #eeeff2;
+  border-radius: 6px;
+  color: rgb(60, 62, 68);
+  font-family: "Inter", sans-serif;
+  font-weight: 400;
+  font-size: 16px;
+  padding: 4px 6px;
+  text-transform: capitalize;
+  margin-right: 10px;
+  font-weight: 500;
+}
+
+.monthview-switch-month {
+  background: #fff;
+  cursor: default;
+  border: 1px solid #e5e7eb;
+  color: rgb(60, 62, 68);
+  font-family: "Inter", sans-serif;
+  font-weight: 400;
+  font-size: 14px;
+  border-radius: 6px;
+}
+
+.monthview-switch-week {
+  background: transparent;
+  color: #2e3336;
+  border-radius: 4px;
+  padding: 6px 16px;
+  margin-right: 8px;
+  font-weight: 500;
+  font-size: 1rem;
+  cursor: pointer;
+  text-transform: capitalize;
+  margin: 0;
+  font-family: "Inter", sans-serif;
+  font-weight: 400;
+  font-size: 14px;
+}
+
+.monthview-body .monthview-td:has(.single-day-event) {
+  /* margin: 5px; */
+  padding: 5px;
+  /* background: rgb(229, 231, 235); */
+}
+
+.monthview-body .monthview-td.monthview-other-month {
+  background: repeating-linear-gradient(120deg,
+      /* angle of the stripes */
+      #e5e8ec,
+      /* light gray color */
+      #e5e8ec 2px,
+      /* stripe width */
+      #ffffff 3px,
+      /* start of white stripe */
+      #ffffff 6px
+      /* stripe width (total pattern size: 20px) */
+    );
+}
+
+@media only screen and (max-width: 1366px) {}
+
+@media only screen and (max-width: 1280px) {
+
+  .single-day-event,
+  .monthview-more-link,
+  .monthview-popup .popup-event,
+  .monthview-popup .popup-title,
+  .weekview-event-multiday,
+  .weekview-event-time,
+  .weekview-event-title {
+    font-size: 12px !important;
+  }
+}
+
+@media only screen and (max-width: 1080px) {
+
+  .single-day-event,
+  .monthview-more-link,
+  .monthview-popup .popup-event,
+  .monthview-popup .popup-title,
+  .weekview-event-multiday,
+  .weekview-event-time,
+  .weekview-event-title {
+    font-size: 12px !important;
+    white-space: wrap;
+  }
+
+  .weekview-event-multiday {
+    padding: 2px;
+    justify-content: center;
+  }
+
+  .single-day-event {
+    padding: 2px;
+  }
+
+  .weekview-event {
+    line-height: normal;
+    height: auto !important;
+  }
+
+  .weekview-event-title {
+    margin-bottom: 5px;
+  }
+
+}
+
+@media only screen and (max-width: 991px) {
+  .weekview-event-multiday {
+    padding: 2px;
+    justify-content: center;
+  }
+
+  .single-day-event {
+    padding: 2px;
+  }
+
+  .single-day-event,
+  .monthview-more-link,
+  .monthview-popup .popup-event,
+  .monthview-popup .popup-title,
+  .weekview-event-multiday {
+    font-size: 12px !important;
+    white-space: wrap;
+  }
+}
+
+@media only screen and (max-width: 768px) {
+  .weekview-nav-btn ,
+  .weekview-toggle-btn.active,
+  .weekview-toggle-btn.inactive,
+  .weekview-switch-week,
+  .weekview-switch-month,
+  .monthview-nav-btn,
+  .monthview-switch-week,
+  .monthview-switch-month{
+    font-size: 14px;
+    padding: 2px 4px;
+    border-radius: 3px;
+  }
+
+  .weekview-title,.monthview-title {
+    font-size: 14px;    color: rgb(60, 62, 68);
+    font-family: "Inter", sans-serif;
+    font-weight: 600;
+  }
+.weekview-toggle-container{    border-radius: 6px;}
+  .button-arrow .weekview-nav-btn,
+  .button-arrow .monthview-nav-btn {
+    width: 25px;
+    height: 25px;
+  }
+}@media only screen and (max-width: 600px) {
+.head_section {
+    display: flex
+;
+    justify-content: flex-start;
+    align-items: flex-start;
+}.weekview-switch, .monthview-switch{ margin-left: 0; margin-right: 10px;}
+.weekview-toggle-container{        margin-right: 10px;}
 }

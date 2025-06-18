@@ -288,7 +288,7 @@ const WeekView: React.FC<WeekViewProps> = ({ events, onSwitchView }) => {
                 className="weekview-header-cell-date-number"
                 style={{
                   color: isToday ? "#fff" : "#888",
-                  background: isToday ? "#1976d2" : "transparent",
+                  background: isToday ? "#000" : "transparent",
                   borderRadius: isToday ? "50%" : "none",
                 }}
               >
