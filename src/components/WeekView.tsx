@@ -99,7 +99,10 @@ const WeekView: React.FC<WeekViewProps> = ({ events, onSwitchView }) => {
   const [now, setNow] = useState(new Date());
   const [timeFormat, setTimeFormat] = useState<"12h" | "24h">("12h");
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
-  const [popupIdx, setPopupIdx] = useState<number | null>(null);
+  const [popupEvent, setPopupEvent] = useState<{
+    dayIdx: number;
+    eventId: string | number;
+  } | null>(null);
 
   useEffect(() => {
     setCurrentWeek(generateWeekArray(currentMonday));
@@ -118,6 +121,16 @@ const WeekView: React.FC<WeekViewProps> = ({ events, onSwitchView }) => {
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
   }, []);
+
+  // Close popup on outside click (use 'mousedown' event)
+  useEffect(() => {
+    if (!popupEvent) return;
+    const handleClick = (e: MouseEvent) => {
+      setPopupEvent(null);
+    };
+    document.addEventListener("mousedown", handleClick);
+    return () => document.removeEventListener("mousedown", handleClick);
+  }, [popupEvent]);
 
   const navigateToNextWeek = () => {
     const nextMonday = new Date(currentMonday);
@@ -327,13 +340,6 @@ const WeekView: React.FC<WeekViewProps> = ({ events, onSwitchView }) => {
         ))}
         {/* Day columns (hour cells + events) */}
         {currentWeek.map((date, dayIdx) => {
-          // Gather all events for this day (timed and multi-day)
-          const allEvents = events.filter((event) => {
-            const start = getEventStart(event);
-            const end = getEventEnd(event);
-            if (!start || !end) return false;
-            return start <= date && date <= end;
-          });
           return (
             <div
               key={dayIdx}
@@ -355,54 +361,170 @@ const WeekView: React.FC<WeekViewProps> = ({ events, onSwitchView }) => {
                   style={{ top: h * hourHeight, height: hourHeight }}
                 />
               ))}
-              {/* Mobile: show one dot for any events, and popup on click */}
-              {windowWidth < 640 && allEvents.length > 0 && (
-                <div
-                  className="event-dot"
-                  onClick={() => setPopupIdx(dayIdx)}
-                  style={{
-                    cursor: "pointer",
-                    display: "inline-block",
-                    position: "absolute",
-                    top: 2,
-                    left: 2,
-                    zIndex: 2,
-                  }}
-                >
-                  ●
-                </div>
-              )}
-              {/* Popup for all events on mobile */}
-              {windowWidth < 640 && popupIdx === dayIdx && (
-                <div
-                  className="weekview-popup"
-                  style={{ position: "absolute", top: 24, left: 2, zIndex: 10 }}
-                >
-                  <button
-                    className="popup-close"
-                    onClick={() => setPopupIdx(null)}
-                    title="Close"
-                  >
-                    ×
-                  </button>
-                  <div className="popup-title">
-                    {date.toLocaleDateString(undefined, {
-                      month: "short",
-                      day: "numeric",
-                      year: "numeric",
+              {/* Mobile: render a dot for each event in its time slot, each with its own popup */}
+              {windowWidth < 640 && (
+                <>
+                  {/* Multi-day events as dots at the top */}
+                  {events
+                    .filter((event) => {
+                      const start = getEventStart(event);
+                      const end = getEventEnd(event);
+                      if (!start || !end) return false;
+                      return isMultiDay(event) && start <= date && date <= end;
+                    })
+                    .map((event, idx) => (
+                      <div
+                        key={event.id || idx}
+                        className="event-dot"
+                        onClick={() =>
+                          setPopupEvent({ dayIdx, eventId: event.id || idx })
+                        }
+                        style={{
+                          cursor: "pointer",
+                          display: "inline-block",
+                          position: "absolute",
+                          top: 2 + idx * 16, // stack dots for multi-day events
+                          left: 2,
+                          zIndex: 2,
+                        }}
+                      >
+                        ●{/* Popup for this event */}
+                        {popupEvent &&
+                          popupEvent.dayIdx === dayIdx &&
+                          popupEvent.eventId === (event.id || idx) && (
+                            <div
+                              className="weekview-popup"
+                              style={{
+                                position: "absolute",
+                                top: 18,
+                                left: 18,
+                                zIndex: 10,
+                              }}
+                              onMouseDown={(e) => e.stopPropagation()}
+                            >
+                              <button
+                                className="popup-close"
+                                onClick={() => setPopupEvent(null)}
+                                title="Close"
+                              >
+                                ×
+                              </button>
+                              <div className="popup-title">
+                                {date.toLocaleDateString(undefined, {
+                                  month: "short",
+                                  day: "numeric",
+                                  year: "numeric",
+                                })}
+                              </div>
+                              <div className="popup-event">
+                                {event.start.dateTime && (
+                                  <span className="mr-1">
+                                    {formatTime(
+                                      event.start.dateTime,
+                                      timeFormat
+                                    )}
+                                  </span>
+                                )}
+                                {event.summary || event.title}
+                              </div>
+                            </div>
+                          )}
+                      </div>
+                    ))}
+                  {/* Timed/single-day events as dots in their time slots */}
+                  {events
+                    .filter((event) => {
+                      const eventDate = event.start.dateTime
+                        ? new Date(event.start.dateTime)
+                        : event.start.date
+                        ? new Date(event.start.date)
+                        : null;
+                      const eventEnd = event.end.dateTime
+                        ? new Date(event.end.dateTime)
+                        : event.end.date
+                        ? new Date(event.end.date)
+                        : null;
+                      if (!eventDate || !eventEnd) return false;
+                      // Only show single-day or timed events
+                      if (event.end.date && !event.end.dateTime) {
+                        eventEnd.setDate(eventEnd.getDate() - 1);
+                      }
+                      return (
+                        !isMultiDay(event) &&
+                        eventDate.getFullYear() === date.getFullYear() &&
+                        eventDate.getMonth() === date.getMonth() &&
+                        eventDate.getDate() === date.getDate()
+                      );
+                    })
+                    .map((event, idx) => {
+                      const start = event.startTime
+                        ? new Date(event.startTime)
+                        : null;
+                      if (!start) return null;
+                      const startHour =
+                        start.getHours() + start.getMinutes() / 60;
+                      const top = startHour * hourHeight;
+                      return (
+                        <div
+                          key={event.id || idx}
+                          className="event-dot"
+                          onClick={() =>
+                            setPopupEvent({ dayIdx, eventId: event.id || idx })
+                          }
+                          style={{
+                            cursor: "pointer",
+                            display: "inline-block",
+                            position: "absolute",
+                            top: top + 2,
+                            // left: 24,
+                            zIndex: 2,
+                          }}
+                        >
+                          ●{/* Popup for this event */}
+                          {popupEvent &&
+                            popupEvent.dayIdx === dayIdx &&
+                            popupEvent.eventId === (event.id || idx) && (
+                              <div
+                                className="weekview-popup"
+                                style={{
+                                  position: "absolute",
+                                  top: 18,
+                                  left: 18,
+                                  zIndex: 10,
+                                }}
+                                onMouseDown={(e) => e.stopPropagation()}
+                              >
+                                <button
+                                  className="popup-close"
+                                  onClick={() => setPopupEvent(null)}
+                                  title="Close"
+                                >
+                                  ×
+                                </button>
+                                <div className="popup-title">
+                                  {date.toLocaleDateString(undefined, {
+                                    month: "short",
+                                    day: "numeric",
+                                    year: "numeric",
+                                  })}
+                                </div>
+                                <div className="popup-event">
+                                  {event.start.dateTime && (
+                                    <span className="mr-1">
+                                      {formatTime(
+                                        event.start.dateTime,
+                                        timeFormat
+                                      )}
+                                    </span>
+                                  )}
+                                  {event.summary || event.title}
+                                </div>
+                              </div>
+                            )}
+                        </div>
+                      );
                     })}
-                  </div>
-                  {allEvents.map((event, i) => (
-                    <div className="popup-event" key={event.id || i}>
-                      {event.start.dateTime && (
-                        <span className="mr-1">
-                          {formatTime(event.start.dateTime, timeFormat)}
-                        </span>
-                      )}
-                      {event.summary || event.title || `Event ${i + 1}`}
-                    </div>
-                  ))}
-                </div>
+                </>
               )}
               {/* Desktop: render events as before */}
               {windowWidth >= 640 && (
@@ -509,7 +631,6 @@ const WeekView: React.FC<WeekViewProps> = ({ events, onSwitchView }) => {
                           (endHour - startHour) * hourHeight,
                           28
                         );
-
                         // Find overlapping events for this day
                         const overlapping = arr.filter((e) => {
                           if (e === event) return false;
@@ -529,7 +650,6 @@ const WeekView: React.FC<WeekViewProps> = ({ events, onSwitchView }) => {
                           (eventIdx === -1 ? 0 : eventIdx) *
                           (100 / overlapCount)
                         }%`;
-
                         return (
                           <div
                             key={event.id + idx}

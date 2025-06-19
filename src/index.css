@@ -962,9 +962,8 @@ h2 {
 }
 
 .weekview-timed-event-container {
-  position: relative;
+  /* position: relative; */
   z-index: 3;
-  /* marginTop is dynamic and remains inline */
 }
 
 .weekview-header-cell span:first-child,
@@ -1078,6 +1077,27 @@ h2 {
     );
 }
 
+.single-day-event,
+.weekview-event-multiday {
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.weekview-event-title {
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.single-day-event:has(.mr-1),
+.weekview-event:has(.mr-1) {
+  font-weight: 400;
+}
+
+.single-day-event:has(.mr-1) .mr-1,
+.weekview-event:has(.mr-1) .mr-1 {
+  font-weight: 700;
+}
+
 @media only screen and (max-width: 1366px) {}
 
 @media only screen and (max-width: 1280px) {
@@ -1088,7 +1108,20 @@ h2 {
   .monthview-popup .popup-title,
   .weekview-event-multiday,
   .weekview-event-time,
+  .weekview-event-title,
+  .single-day-event,
+  .weekview-event-multiday,
   .weekview-event-title {
+    font-size: 12px !important;
+  }
+
+  .single-day-event:has(.mr-1),
+  .weekview-event:has(.mr-1) {
+    font-size: 12px !important;
+  }
+
+  .single-day-event:has(.mr-1) .mr-1,
+  .weekview-event:has(.mr-1) .mr-1 {
     font-size: 12px !important;
   }
 }
@@ -1147,36 +1180,144 @@ h2 {
 }
 
 @media only screen and (max-width: 768px) {
-  .weekview-nav-btn ,
+
+  .weekview-nav-btn,
   .weekview-toggle-btn.active,
   .weekview-toggle-btn.inactive,
   .weekview-switch-week,
   .weekview-switch-month,
   .monthview-nav-btn,
   .monthview-switch-week,
-  .monthview-switch-month{
+  .monthview-switch-month {
     font-size: 14px;
     padding: 2px 4px;
     border-radius: 3px;
   }
 
-  .weekview-title,.monthview-title {
-    font-size: 14px;    color: rgb(60, 62, 68);
+  .weekview-title,
+  .monthview-title {
+    font-size: 14px;
+    color: rgb(60, 62, 68);
     font-family: "Inter", sans-serif;
     font-weight: 600;
   }
-.weekview-toggle-container{    border-radius: 6px;}
+
+  .weekview-toggle-container {
+    border-radius: 6px;
+  }
+
   .button-arrow .weekview-nav-btn,
   .button-arrow .monthview-nav-btn {
     width: 25px;
     height: 25px;
   }
-}@media only screen and (max-width: 600px) {
-.head_section {
-    display: flex
-;
+}
+
+@media only screen and (max-width: 600px) {
+  .head_section {
+    display: flex;
     justify-content: flex-start;
     align-items: flex-start;
-}.weekview-switch, .monthview-switch{ margin-left: 0; margin-right: 10px;}
-.weekview-toggle-container{        margin-right: 10px;}
+  }
+
+  .weekview-switch,
+  .monthview-switch {
+    margin-left: 0;
+    margin-right: 10px;
+  }
+
+  .weekview-toggle-container {
+    margin-right: 10px;
+  }
+}
+
+
+
+@media only screen and (max-width: 639px) {
+
+  .event-dot,
+  .single-day-event-cover {
+    left: 0;
+    right: 0;
+    margin: 0 auto;
+    text-align: center;
+  }
+
+  .weekview-popup {
+    left: 5px;
+    right: 6px;
+    background: #fff;
+    border: 1px solid #0002;
+    border-radius: 6px;
+    box-shadow: 0 2px 12px #0002;
+    padding: 10px 8px 8px 8px;
+    min-width: 140px;
+    max-width: 100%;
+    min-height: 32px;
+    max-height: 220px;
+    overflow-y: auto;
+    font-size: 0.97em;
+  }
+
+  .weekview-popup .popup-close {
+    position: absolute;
+    top: 2px;
+    right: 8px;
+    background: none;
+    border: none;
+    color: #292929;
+    font-size: 1.1em;
+    cursor: pointer;
+    padding: 0;
+    margin: 4px;
+    border-radius: 4px;
+  }
+
+  .weekview-popup .popup-event {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    border-radius: 4px;
+    padding: 6px 16px;
+    margin-right: 8px;
+    text-transform: capitalize;
+    margin: 0;
+    font-family: "Inter", sans-serif;
+    font-weight: 400;
+    font-size: 12px;
+    background: #292929;
+    color: #fff;
+    margin-bottom: 3px;
+  }
+
+  .weekview-popup .popup-title {
+    margin-bottom: 6px;
+    color: rgb(60, 62, 68) !important;
+    font-family: "Inter", sans-serif;
+    font-weight: 700;
+    font-size: 12px !important;
+  }
+
+  .weekview-day-col-last .weekview-popup,
+  .weekview-day-col:nth-last-child(2) .weekview-popup,
+  .weekview-day-col:nth-last-child(3) .weekview-popup {
+    right: 0px;
+    left: inherit !important;
+  }
+
+  .single-day-event-cover {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .monthview-body .monthview-td:nth-child(7n + 5) .monthview-popup,
+  .monthview-body .monthview-td:nth-child(7n + 6) .monthview-popup,
+  .monthview-body .monthview-td:nth-child(7n + 7) .monthview-popup {
+    right: 5px;
+    left: inherit !important;
+  }
+
+  .monthview-body {
+    grid-template-rows: repeat(6, 100px);
+  }
 }
