@@ -77,7 +77,7 @@ const MonthView: React.FC<MonthViewProps> = ({ events, onSwitchView }) => {
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
   }, []);
-
+  console.log(events);
   const monthDays = getMonthDays({ currentDate, selectedDate });
   // console.log(monthDays);
   const handlePreviousMonth = () => {
@@ -168,6 +168,7 @@ const MonthView: React.FC<MonthViewProps> = ({ events, onSwitchView }) => {
                 (event) => !event.start.dateTime || isMultiDay(event)
               );
               const dayEvents = [...allDayEvents, ...timedEvents];
+
               const showPopup = popupIdx === idx;
               // Determine if this day is in the current month
               const isCurrentMonth =

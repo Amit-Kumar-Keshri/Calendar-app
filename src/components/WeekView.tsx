@@ -122,14 +122,21 @@ const WeekView: React.FC<WeekViewProps> = ({ events, onSwitchView }) => {
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
-  // Close popup on outside click (use 'mousedown' event)
+  // Close popup on outside click (use 'click' event)
   useEffect(() => {
     if (!popupEvent) return;
     const handleClick = (e: MouseEvent) => {
+      // Don't close if clicking inside a popup or on a dot
+      if (
+        (e.target as HTMLElement).closest(".weekview-popup") ||
+        (e.target as HTMLElement).closest(".event-dot")
+      ) {
+        return;
+      }
       setPopupEvent(null);
     };
-    document.addEventListener("mousedown", handleClick);
-    return () => document.removeEventListener("mousedown", handleClick);
+    document.addEventListener("click", handleClick);
+    return () => document.removeEventListener("click", handleClick);
   }, [popupEvent]);
 
   const navigateToNextWeek = () => {
@@ -376,16 +383,23 @@ const WeekView: React.FC<WeekViewProps> = ({ events, onSwitchView }) => {
                       <div
                         key={event.id || idx}
                         className="event-dot"
-                        onClick={() =>
-                          setPopupEvent({ dayIdx, eventId: event.id || idx })
-                        }
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setPopupEvent({ dayIdx, eventId: event.id || idx });
+                        }}
                         style={{
                           cursor: "pointer",
                           display: "inline-block",
                           position: "absolute",
                           top: 2 + idx * 16, // stack dots for multi-day events
                           left: 2,
-                          zIndex: 2,
+                          // Raise z-index when this dot's popup is active so the popup isn't hidden behind other elements
+                          zIndex:
+                            popupEvent &&
+                            popupEvent.dayIdx === dayIdx &&
+                            popupEvent.eventId === (event.id || idx)
+                              ? 1001
+                              : 2,
                         }}
                       >
                         ●{/* Popup for this event */}
@@ -400,11 +414,15 @@ const WeekView: React.FC<WeekViewProps> = ({ events, onSwitchView }) => {
                                 left: 18,
                                 zIndex: 10,
                               }}
-                              onMouseDown={(e) => e.stopPropagation()}
+                              onClick={(e) => e.stopPropagation()}
                             >
                               <button
                                 className="popup-close"
-                                onClick={() => setPopupEvent(null)}
+                                onClick={(e) => {
+                                  e.stopPropagation(); // Stop event from bubbling up
+                                  console.log("clicked");
+                                  setPopupEvent(null);
+                                }}
                                 title="Close"
                               >
                                 ×
@@ -468,16 +486,23 @@ const WeekView: React.FC<WeekViewProps> = ({ events, onSwitchView }) => {
                         <div
                           key={event.id || idx}
                           className="event-dot"
-                          onClick={() =>
-                            setPopupEvent({ dayIdx, eventId: event.id || idx })
-                          }
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setPopupEvent({ dayIdx, eventId: event.id || idx });
+                          }}
                           style={{
                             cursor: "pointer",
                             display: "inline-block",
                             position: "absolute",
                             top: top + 2,
                             // left: 24,
-                            zIndex: 2,
+                            // Raise z-index when this dot's popup is active so the popup isn't hidden behind other elements
+                            zIndex:
+                              popupEvent &&
+                              popupEvent.dayIdx === dayIdx &&
+                              popupEvent.eventId === (event.id || idx)
+                                ? 1001
+                                : 2,
                           }}
                         >
                           ●{/* Popup for this event */}
@@ -490,13 +515,17 @@ const WeekView: React.FC<WeekViewProps> = ({ events, onSwitchView }) => {
                                   position: "absolute",
                                   top: 18,
                                   left: 18,
-                                  zIndex: 10,
+                                  zIndex: 1000,
                                 }}
-                                onMouseDown={(e) => e.stopPropagation()}
+                                onClick={(e) => e.stopPropagation()}
                               >
                                 <button
                                   className="popup-close"
-                                  onClick={() => setPopupEvent(null)}
+                                  onClick={(e) => {
+                                    e.stopPropagation(); // Stop event from bubbling up
+                                    console.log("clicked");
+                                    setPopupEvent(null);
+                                  }}
                                   title="Close"
                                 >
                                   ×

@@ -30,7 +30,7 @@ export const fetchEvents = async (
     }
   );
 
-  const url = `https://www.googleapis.com/calendar/v3/calendars/${CALENDAR_ID}/events`;
+  const url = `https://www.googleapis.com/calendar/v3/calendars/${CALENDAR_ID}/events?{API_KEY}`;
 
   const response = await axios.get(url, { params });
 

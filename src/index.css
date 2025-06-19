@@ -1320,4 +1320,16 @@ h2 {
   .monthview-body {
     grid-template-rows: repeat(6, 100px);
   }
+
+  .weekview-day-col .event-dot {
+    right: 0;
+    left: inherit !important;
+   
+    width: 100%;      
+  }
+ 
+  .weekview-day-col .event-dot span {
+    width: 100%;position: relative;
+        z-index: 3;
+  }
 }
