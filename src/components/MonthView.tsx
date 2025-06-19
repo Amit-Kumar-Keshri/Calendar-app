@@ -71,13 +71,17 @@ const MonthView: React.FC<MonthViewProps> = ({ events, onSwitchView }) => {
   const [currentDate, setCurrentDate] = useState<Date>(new Date());
   const [popupIdx, setPopupIdx] = useState<number | null>(null);
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
+  // Track expanded event per cell: { [cellIdx]: eventIdx }
+  const [expandedEvent, setExpandedEvent] = useState<{
+    [cellIdx: number]: number | null;
+  }>({});
 
   useEffect(() => {
     const handleResize = () => setWindowWidth(window.innerWidth);
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
   }, []);
-  console.log(events);
+
   const monthDays = getMonthDays({ currentDate, selectedDate });
   // console.log(monthDays);
   const handlePreviousMonth = () => {
@@ -174,6 +178,8 @@ const MonthView: React.FC<MonthViewProps> = ({ events, onSwitchView }) => {
               const isCurrentMonth =
                 day.fullDate.getMonth() === currentDate.getMonth() &&
                 day.fullDate.getFullYear() === currentDate.getFullYear();
+              // Use isToday from getMonthDays
+              const isToday = day.isToday;
               return (
                 <div
                   className={
@@ -182,7 +188,15 @@ const MonthView: React.FC<MonthViewProps> = ({ events, onSwitchView }) => {
                   }
                   key={idx}
                 >
-                  <div className="monthview-date">{day.date}</div>
+                  <div className={"monthview-date-wrapper"}>
+                    <div
+                      className={
+                        "monthview-date" + (isToday ? " monthview-today" : "")
+                      }
+                    >
+                      {day.date}
+                    </div>
+                  </div>
                   {/* Show up to 3 events (all-day/multi-day first, then timed) */}
                   <div className="single-day-event-cover">
                     {windowWidth < 640
@@ -198,16 +212,46 @@ const MonthView: React.FC<MonthViewProps> = ({ events, onSwitchView }) => {
                             ●
                           </div>
                         )
-                      : dayEvents.slice(0, 3).map((event, i) => (
-                          <div className="single-day-event" key={event.id || i}>
-                            {event.start.dateTime && (
-                              <span className="mr-1">
-                                {formatTime(event.start.dateTime)}
+                      : dayEvents.slice(0, 3).map((event, i) => {
+                          const isExpanded = expandedEvent[idx] === i;
+                          const title =
+                            event.summary || event.title || `Event ${i + 1}`;
+                          const isExpandable = title.length > 40;
+                          return (
+                            <div
+                              className="single-day-event"
+                              key={event.id || i}
+                            >
+                              {event.start.dateTime && (
+                                <span className="mr-1">
+                                  {formatTime(event.start.dateTime)}
+                                </span>
+                              )}
+                              <span
+                                className={
+                                  (isExpanded
+                                    ? "single-day-event-title expanded"
+                                    : "single-day-event-title") +
+                                  (isExpandable ? " expandable" : "")
+                                }
+                                onClick={
+                                  isExpandable
+                                    ? () =>
+                                        setExpandedEvent({
+                                          ...expandedEvent,
+                                          [idx]: isExpanded ? null : i,
+                                        })
+                                    : undefined
+                                }
+                                style={
+                                  isExpandable ? { cursor: "pointer" } : {}
+                                }
+                              >
+                                {title}
                               </span>
-                            )}
-                            {event.summary || event.title || `Event ${i + 1}`}
-                          </div>
-                        ))}
+                            </div>
+                          );
+                        })}
 
                     {/* Show "+N more" if more than 3 events */}
                     {dayEvents.length > 3 && (

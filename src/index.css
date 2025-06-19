@@ -44,7 +44,7 @@ h2 {
   margin-bottom: 8px;
 }
 
-.month-days>div {
+.month-days > div {
   margin-bottom: 2px;
 }
 
@@ -96,8 +96,6 @@ h2 {
   align-items: center;
   margin-bottom: 0;
 }
-
-
 
 .monthview-nav-btn:last-child {
   margin-left: 8px;
@@ -166,19 +164,31 @@ h2 {
   opacity: 0.7;
 }
 
+/* MonthView date wrapper for centering */
+.monthview-date-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 32px; /* or match your cell height for vertical centering */
+}
+
 .monthview-date {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  font-size: 14px;
   color: rgb(60, 62, 68);
   font-family: "Inter", sans-serif;
-  font-size: 16px;
-  text-align: center;
   font-weight: 400;
-  font-size: 14px;
-  line-height: 1.25rem;
-  font-family: "Inter", sans-serif;
+  text-align: center;
 }
 
 .monthview-date.monthview-today {
-  color: #1976d2;
+  background: #292929;
+  color: #fff;
+  border-radius: 50%;
 }
 
 .monthview-event-list {
@@ -229,8 +239,6 @@ h2 {
   cursor: pointer;
   margin: 0;
 }
-
-
 
 .weekview-toolbar {
   display: flex;
@@ -511,7 +519,7 @@ h2 {
 .monthview-body {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
-  grid-template-rows: repeat(6, 150px);
+  grid-template-rows: repeat(6, 270px);
   gap: 0;
   width: 100%;
   border-radius: 8px;
@@ -546,7 +554,7 @@ h2 {
   margin-bottom: 2px;
   border-radius: 3px;
   font-size: 12px;
-  white-space: nowrap;
+  /* white-space: nowrap; */
   overflow: hidden;
   text-overflow: ellipsis;
   font-family: "Inter", sans-serif;
@@ -562,7 +570,7 @@ h2 {
   font-family: "Inter", sans-serif;
   font-weight: 400;
   font-size: 14px !important;
-  text-transform: capitalize;
+  /* text-transform: capitalize; */
 
   font-weight: 500;
   background: transparent !important;
@@ -784,7 +792,7 @@ h2 {
   /* width of time column */
   right: 0;
   /* top is dynamic and remains inline */
-  height: 4px;
+  height: 2px;
   background: #000;
   z-index: 20;
   pointer-events: none;
@@ -987,13 +995,13 @@ h2 {
 }
 
 .weekview-header-cell span:first-child {
-  font-size: 12px
+  font-size: 12px;
 }
 
 .weekview-nav-btn svg,
 .monthview-nav-btn svg {
   font-weight: 400;
-  font-size: .875rem;
+  font-size: 0.875rem;
 }
 
 .right-view {
@@ -1064,17 +1072,14 @@ h2 {
 }
 
 .monthview-body .monthview-td.monthview-other-month {
-  background: repeating-linear-gradient(120deg,
-      /* angle of the stripes */
-      #e5e8ec,
-      /* light gray color */
-      #e5e8ec 2px,
-      /* stripe width */
-      #ffffff 3px,
-      /* start of white stripe */
-      #ffffff 6px
+  background: repeating-linear-gradient(
+    120deg,
+    /* angle of the stripes */ #e5e8ec,
+    /* light gray color */ #e5e8ec 2px,
+    /* stripe width */ #ffffff 3px,
+    /* start of white stripe */ #ffffff 6px
       /* stripe width (total pattern size: 20px) */
-    );
+  );
 }
 
 .single-day-event,
@@ -1098,10 +1103,10 @@ h2 {
   font-weight: 700;
 }
 
-@media only screen and (max-width: 1366px) {}
+@media only screen and (max-width: 1366px) {
+}
 
 @media only screen and (max-width: 1280px) {
-
   .single-day-event,
   .monthview-more-link,
   .monthview-popup .popup-event,
@@ -1127,7 +1132,6 @@ h2 {
 }
 
 @media only screen and (max-width: 1080px) {
-
   .single-day-event,
   .monthview-more-link,
   .monthview-popup .popup-event,
@@ -1156,7 +1160,6 @@ h2 {
   .weekview-event-title {
     margin-bottom: 5px;
   }
-
 }
 
 @media only screen and (max-width: 991px) {
@@ -1180,7 +1183,6 @@ h2 {
 }
 
 @media only screen and (max-width: 768px) {
-
   .weekview-nav-btn,
   .weekview-toggle-btn.active,
   .weekview-toggle-btn.inactive,
@@ -1231,10 +1233,7 @@ h2 {
   }
 }
 
-
-
 @media only screen and (max-width: 639px) {
-
   .event-dot,
   .single-day-event-cover {
     left: 0;
@@ -1324,12 +1323,41 @@ h2 {
   .weekview-day-col .event-dot {
     right: 0;
     left: inherit !important;
-   
-    width: 100%;      
+
+    width: 100%;
   }
- 
+
   .weekview-day-col .event-dot span {
-    width: 100%;position: relative;
-        z-index: 3;
+    width: 100%;
+    position: relative;
+    z-index: 3;
   }
+}
+
+/* Clamp event title to 2 lines with ellipsis */
+.single-day-event-title {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: normal;
+  word-break: break-word;
+  max-width: 100%;
+}
+
+.single-day-event-title.expanded {
+  display: block;
+  -webkit-line-clamp: unset;
+  -webkit-box-orient: unset;
+  overflow: visible;
+  white-space: normal;
+}
+
+.expand-link {
+  color: #000;
+  cursor: pointer;
+  font-size: 12px;
+  margin-left: 4px;
+  text-decoration: underline;
 }

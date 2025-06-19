@@ -81,12 +81,11 @@ const isMultiDay = (event: Event) => {
   const start = getEventStart(event);
   const end = getEventEnd(event);
   if (!start || !end) return false;
-  return (
-    (event.end.date && !event.end.dateTime) ||
-    end.getDate() !== start.getDate() ||
-    end.getMonth() !== start.getMonth() ||
-    end.getFullYear() !== start.getFullYear()
-  );
+  // All-day event (date only, not dateTime)
+  if (event.end.date && !event.end.dateTime) return true;
+  // Timed event: check if duration is >= 24 hours
+  const durationMs = end.getTime() - start.getTime();
+  return durationMs >= 24 * 60 * 60 * 1000;
 };
 
 const WeekView: React.FC<WeekViewProps> = ({ events, onSwitchView }) => {
@@ -654,7 +653,16 @@ const WeekView: React.FC<WeekViewProps> = ({ events, onSwitchView }) => {
                         if (!start || !end) return null;
                         const startHour =
                           start.getHours() + start.getMinutes() / 60;
-                        const endHour = end.getHours() + end.getMinutes() / 60;
+                        let endHour = end.getHours() + end.getMinutes() / 60;
+                        // If event ends at 0:00 and is on the next day, treat as 24:00 for current day
+                        if (
+                          end.getHours() === 0 &&
+                          end.getMinutes() === 0 &&
+                          end > start &&
+                          end.getDate() !== start.getDate()
+                        ) {
+                          endHour = 24;
+                        }
                         const top = startHour * hourHeight;
                         const height = Math.max(
                           (endHour - startHour) * hourHeight,
