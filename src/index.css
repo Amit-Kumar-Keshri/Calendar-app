@@ -1232,7 +1232,9 @@ h2 {
     margin-right: 10px;
   }
 }
-
+@media only screen and (max-width:1800px) {
+.monthview-body{grid-template-rows: repeat(6, 240px);}
+}
 @media only screen and (max-width: 639px) {
   .event-dot,
   .single-day-event-cover {
@@ -1317,7 +1319,7 @@ h2 {
   }
 
   .monthview-body {
-    grid-template-rows: repeat(6, 100px);
+    grid-template-rows: repeat(6, 120px);
   }
 
   .weekview-day-col .event-dot {
