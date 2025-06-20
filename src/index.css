@@ -1361,3 +1361,27 @@ h2 {
   margin-left: 4px;
   text-decoration: underline;
 }
+
+/* WeekView Non-Business Hours Overlay */
+.weekview-non-business-hours {
+  position: absolute;
+  left: 0;
+  right: 0;
+  background: repeating-linear-gradient(
+    120deg,
+    #e5e8ec,
+    #e5e8ec 2px,
+    #ffffff 3px,
+    #ffffff 6px
+  );
+  pointer-events: none;
+  z-index: 1;
+}
+
+.weekview-non-business-hours.before-9am {
+  top: 0;
+}
+
+.weekview-non-business-hours.after-6pm {
+  /* top will be calculated dynamically based on hourHeight */
+}

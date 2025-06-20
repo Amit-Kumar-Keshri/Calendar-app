@@ -828,6 +828,23 @@ const WeekView: React.FC<WeekViewProps> = ({ events, onSwitchView }) => {
                   </div>
                 </>
               )}
+
+              {/* Diagonal striped overlay for non-business hours (before 9 AM and after 6 PM) */}
+              {/* Before 9 AM */}
+              <div
+                className="weekview-non-business-hours before-9am"
+                style={{
+                  height: 9 * hourHeight, // 0 AM to 9 AM
+                }}
+              />
+              {/* After 6 PM */}
+              <div
+                className="weekview-non-business-hours after-6pm"
+                style={{
+                  top: 18 * hourHeight, // 6 PM (18:00) onwards
+                  height: 6 * hourHeight, // 6 PM to 12 AM (6 hours)
+                }}
+              />
             </div>
           );
         })}
