@@ -519,7 +519,7 @@ h2 {
 .monthview-body {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
-  grid-template-rows: repeat(6, 270px);
+  grid-template-rows: repeat(6, 200px);
   gap: 0;
   width: 100%;
   border-radius: 8px;

@@ -1,6 +1,11 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo, useCallback } from "react";
 import type { Event } from "../types";
-import { getMonthDays } from "../utils/dateTime";
+import {
+  getMonthDays,
+  APP_TIMEZONE,
+  getCurrentDateInTimezone,
+  convertToTimezone,
+} from "../utils/dateTime";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faAngleLeft, faAngleRight } from "@fortawesome/free-solid-svg-icons";
 
@@ -38,16 +43,6 @@ const isMultiDay = (event: Event) => {
   );
 };
 
-const formatTime = (dateStr: string | null | undefined) => {
-  if (!dateStr) return "";
-  const date = new Date(dateStr);
-  return date.toLocaleTimeString([], {
-    hour: "2-digit",
-    minute: "2-digit",
-    hour12: true,
-  });
-};
-
 const getMonthName = (date: Date) => {
   const months = [
     "January",
@@ -67,8 +62,12 @@ const getMonthName = (date: Date) => {
 };
 
 const MonthView: React.FC<MonthViewProps> = ({ events, onSwitchView }) => {
-  const [selectedDate, setSelectedDate] = useState<Date>(new Date());
-  const [currentDate, setCurrentDate] = useState<Date>(new Date());
+  const [selectedDate, setSelectedDate] = useState<Date>(
+    getCurrentDateInTimezone()
+  );
+  const [currentDate, setCurrentDate] = useState<Date>(
+    getCurrentDateInTimezone()
+  );
   const [popupIdx, setPopupIdx] = useState<number | null>(null);
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
   // Track expanded event per cell: { [cellIdx]: eventIdx }
@@ -76,40 +75,114 @@ const MonthView: React.FC<MonthViewProps> = ({ events, onSwitchView }) => {
     [cellIdx: number]: number | null;
   }>({});
 
+  const [hoveredEvent, setHoveredEvent] = useState<{
+    event: Event;
+    x: number;
+    y: number;
+  } | null>(null);
+
+  // Memoize timezone-converted events to avoid repeated conversions
+  const convertedEvents = useMemo(() => {
+    return events.map((event) => {
+      let convertedStart = null;
+      let convertedEnd = null;
+
+      if (event.start.dateTime) {
+        convertedStart = convertToTimezone(new Date(event.start.dateTime));
+      } else if (event.start.date) {
+        convertedStart = new Date(event.start.date);
+      }
+
+      if (event.end.dateTime) {
+        convertedEnd = convertToTimezone(new Date(event.end.dateTime));
+      } else if (event.end.date) {
+        const d = new Date(event.end.date);
+        d.setDate(d.getDate() - 1);
+        convertedEnd = d;
+      }
+
+      return {
+        ...event,
+        convertedStart,
+        convertedEnd,
+      };
+    });
+  }, [events]);
+
   useEffect(() => {
     const handleResize = () => setWindowWidth(window.innerWidth);
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
-  const monthDays = getMonthDays({ currentDate, selectedDate });
-  // console.log(monthDays);
-  const handlePreviousMonth = () => {
+  const monthDays = useMemo(
+    () => getMonthDays({ currentDate, selectedDate }),
+    [currentDate, selectedDate]
+  );
+
+  const handlePreviousMonth = useCallback(() => {
     const prevMonth = new Date(currentDate);
     prevMonth.setMonth(prevMonth.getMonth() - 1);
     setCurrentDate(prevMonth);
     setSelectedDate(prevMonth);
-  };
-  const handleNextMonth = () => {
+  }, [currentDate]);
+
+  const handleNextMonth = useCallback(() => {
     const nextMonth = new Date(currentDate);
     nextMonth.setMonth(nextMonth.getMonth() + 1);
     setCurrentDate(nextMonth);
     setSelectedDate(nextMonth);
-  };
-  const handleToday = () => {
-    const today = new Date();
+  }, [currentDate]);
+
+  const handleToday = useCallback(() => {
+    const today = getCurrentDateInTimezone();
     setCurrentDate(today);
     setSelectedDate(today);
-  };
+  }, []);
 
-  const totalEventsinDay = (date: Date): Event[] => {
-    return events.filter((event) => {
-      const start = getEventStart(event);
-      const end = getEventEnd(event);
-      if (!start || !end) return false;
-      return start <= date && date <= end;
+  const totalEventsinDay = useCallback(
+    (date: Date) => {
+      return convertedEvents.filter((event) => {
+        if (!event.convertedStart || !event.convertedEnd) return false;
+        return event.convertedStart <= date && date <= event.convertedEnd;
+      });
+    },
+    [convertedEvents]
+  );
+
+  const handleEventHover = useCallback((event: Event, e: React.MouseEvent) => {
+    setHoveredEvent({
+      event,
+      x: e.clientX,
+      y: e.clientY,
     });
-  };
+  }, []);
+
+  const handleEventLeave = useCallback(() => {
+    setHoveredEvent(null);
+  }, []);
+
+  const formatTime = useCallback(
+    (dateString: string, format: "12h" | "24h") => {
+      if (!dateString) return "";
+      const date = new Date(dateString);
+      if (format === "12h") {
+        return date.toLocaleTimeString("en-US", {
+          hour: "2-digit",
+          minute: "2-digit",
+          hour12: true,
+          timeZone: APP_TIMEZONE,
+        });
+      } else {
+        return date.toLocaleTimeString("en-US", {
+          hour: "2-digit",
+          minute: "2-digit",
+          timeZone: APP_TIMEZONE,
+        });
+      }
+    },
+    []
+  );
 
   return (
     <div className="monthview-container">
@@ -157,15 +230,15 @@ const MonthView: React.FC<MonthViewProps> = ({ events, onSwitchView }) => {
               const allEvents = totalEventsinDay(day.fullDate);
 
               // Timed events: those with start.dateTime (not all-day)
-              const timedEvents = events.filter((event) => {
-                const start = event.start.dateTime
-                  ? new Date(event.start.dateTime)
-                  : null;
-                if (!start) return false;
+              const timedEvents = convertedEvents.filter((event) => {
+                if (!event.convertedStart || !event.start.dateTime)
+                  return false;
+
                 return (
-                  start.getFullYear() === day.fullDate.getFullYear() &&
-                  start.getMonth() === day.fullDate.getMonth() &&
-                  start.getDate() === day.fullDate.getDate()
+                  event.convertedStart.getFullYear() ===
+                    day.fullDate.getFullYear() &&
+                  event.convertedStart.getMonth() === day.fullDate.getMonth() &&
+                  event.convertedStart.getDate() === day.fullDate.getDate()
                 );
               });
               const allDayEvents = allEvents.filter(
@@ -221,10 +294,12 @@ const MonthView: React.FC<MonthViewProps> = ({ events, onSwitchView }) => {
                             <div
                               className="single-day-event"
                               key={event.id || i}
+                              onMouseEnter={(e) => handleEventHover(event, e)}
+                              onMouseLeave={handleEventLeave}
                             >
                               {event.start.dateTime && (
                                 <span className="mr-1">
-                                  {formatTime(event.start.dateTime)}
+                                  {formatTime(event.start.dateTime, "12h")}
                                 </span>
                               )}
                               <span
@@ -274,17 +349,23 @@ const MonthView: React.FC<MonthViewProps> = ({ events, onSwitchView }) => {
                         ×
                       </button>
                       <div className="popup-title">
-                        {day.fullDate.toLocaleDateString(undefined, {
+                        {day.fullDate.toLocaleDateString("en-US", {
                           month: "short",
                           day: "numeric",
                           year: "numeric",
+                          timeZone: APP_TIMEZONE,
                         })}
                       </div>
                       {dayEvents.map((event, i) => (
-                        <div className="popup-event" key={event.id || i}>
+                        <div
+                          className="popup-event"
+                          key={event.id || i}
+                          onMouseEnter={(e) => handleEventHover(event, e)}
+                          onMouseLeave={handleEventLeave}
+                        >
                           {event.start.dateTime && (
                             <span className="mr-1">
-                              {formatTime(event.start.dateTime)}
+                              {formatTime(event.start.dateTime, "12h")}
                             </span>
                           )}
                           {event.summary || event.title || `Event ${i + 1}`}
@@ -298,6 +379,47 @@ const MonthView: React.FC<MonthViewProps> = ({ events, onSwitchView }) => {
           </div>
         </div>
       </div>
+
+      {/* Event Hover Tooltip */}
+      {hoveredEvent && (
+        <div
+          className="event-tooltip"
+          style={{
+            position: "fixed",
+            left: hoveredEvent.x + 10,
+            top: hoveredEvent.y - 10,
+            background: "rgba(0, 0, 0, 0.9)",
+            color: "white",
+            padding: "8px 12px",
+            borderRadius: "6px",
+            fontSize: "12px",
+            zIndex: 10000,
+            maxWidth: "250px",
+            pointerEvents: "none",
+          }}
+        >
+          <div style={{ fontWeight: "bold", marginBottom: "4px" }}>
+            {hoveredEvent.event.summary || hoveredEvent.event.title || "Event"}
+          </div>
+          {hoveredEvent.event.start.dateTime && (
+            <div style={{ marginBottom: "2px" }}>
+              {formatTime(hoveredEvent.event.start.dateTime, "12h")}
+              {hoveredEvent.event.end.dateTime &&
+                ` - ${formatTime(hoveredEvent.event.end.dateTime, "12h")}`}
+            </div>
+          )}
+          {hoveredEvent.event.description && (
+            <div style={{ fontSize: "11px", opacity: 0.9 }}>
+              {hoveredEvent.event.description}
+            </div>
+          )}
+          {hoveredEvent.event.location && (
+            <div style={{ fontSize: "11px", opacity: 0.8, marginTop: "2px" }}>
+              📍 {hoveredEvent.event.location}
+            </div>
+          )}
+        </div>
+      )}
     </div>
   );
 };

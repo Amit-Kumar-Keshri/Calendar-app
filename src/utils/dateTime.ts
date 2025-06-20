@@ -1,14 +1,81 @@
+// Centralized timezone configuration
+export const APP_TIMEZONE = "America/New_York";
+
+// Cache for timezone conversions to improve performance
+const timezoneCache = new Map<string, Date>();
+
+// Helper function to get the current date in the app timezone
+export const getCurrentDateInTimezone = (timezone: string = APP_TIMEZONE) => {
+  return new Date(new Date().toLocaleString("en-US", { timeZone: timezone }));
+};
+
+// Optimized timezone conversion with caching
+export const convertToTimezone = (
+  date: Date,
+  timezone: string = APP_TIMEZONE
+) => {
+  const cacheKey = `${date.getTime()}-${timezone}`;
+
+  if (timezoneCache.has(cacheKey)) {
+    return timezoneCache.get(cacheKey)!;
+  }
+
+  const converted = new Date(
+    date.toLocaleString("en-US", { timeZone: timezone })
+  );
+  timezoneCache.set(cacheKey, converted);
+
+  // Limit cache size to prevent memory leaks
+  if (timezoneCache.size > 1000) {
+    const firstKey = timezoneCache.keys().next().value;
+    if (firstKey) {
+      timezoneCache.delete(firstKey);
+    }
+  }
+
+  return converted;
+};
+
+// Fast timezone conversion for dates (more efficient for date-only comparisons)
+export const convertDateToTimezone = (
+  date: Date,
+  timezone: string = APP_TIMEZONE
+) => {
+  // For performance, use UTC offset calculation when possible
+  if (timezone === "America/New_York") {
+    const utcTime = date.getTime() + date.getTimezoneOffset() * 60000;
+    // Approximate EST/EDT offset (this is a simplification)
+    const isDST = isDaylightSavingTime(date);
+    const offset = isDST ? -4 : -5; // EDT or EST
+    return new Date(utcTime + offset * 3600000);
+  }
+
+  // Fallback to full conversion for other timezones
+  return convertToTimezone(date, timezone);
+};
+
+// Helper to determine if date is in daylight saving time (approximate)
+const isDaylightSavingTime = (date: Date): boolean => {
+  const january = new Date(date.getFullYear(), 0, 1);
+  const july = new Date(date.getFullYear(), 6, 1);
+  return (
+    date.getTimezoneOffset() <
+    Math.max(january.getTimezoneOffset(), july.getTimezoneOffset())
+  );
+};
+
 export const isSameDay = (
   date1: Date,
   date2: Date,
-  timezone: string = "UTC"
+  timezone: string = APP_TIMEZONE
 ) => {
   if (!(date1 instanceof Date) || !(date2 instanceof Date)) {
     return false;
   }
 
-  const d1 = new Date(date1.toLocaleString("en-US", { timeZone: timezone }));
-  const d2 = new Date(date2.toLocaleString("en-US", { timeZone: timezone }));
+  // Use optimized conversion for same day comparison
+  const d1 = convertDateToTimezone(date1, timezone);
+  const d2 = convertDateToTimezone(date2, timezone);
 
   return (
     d1.getDate() === d2.getDate() &&
@@ -33,14 +100,21 @@ export const getWeekDays = ({
     const date = new Date(startOfWeek);
     date.setUTCHours(0, 0, 0, 0);
     date.setDate(startOfWeek.getDate() + index);
-    const hasBreak = breakRequest && isSameDay(date, breakRequest.startDate);
+    const hasBreak =
+      breakRequest && isSameDay(date, breakRequest.startDate, APP_TIMEZONE);
 
     return {
-      day: date.toLocaleString("en-US", { weekday: "short" }).toUpperCase(),
+      day: date
+        .toLocaleString("en-US", { weekday: "short", timeZone: APP_TIMEZONE })
+        .toUpperCase(),
       date: date.getDate(),
       fullDate: date,
-      isToday: isSameDay(date, new Date()),
-      isActive: isSameDay(date, selectedDate),
+      isToday: isSameDay(
+        date,
+        getCurrentDateInTimezone(APP_TIMEZONE),
+        APP_TIMEZONE
+      ),
+      isActive: isSameDay(date, selectedDate, APP_TIMEZONE),
       hasBreak: hasBreak,
     };
   });
@@ -68,11 +142,17 @@ export const getMonthDays = ({
   for (let i = startPadding - 1; i >= 0; i--) {
     const date = new Date(Date.UTC(year, month - 1, prevMonthLastDay - i));
     allDays.push({
-      day: date.toLocaleString("en-US", { weekday: "short" }).toUpperCase(),
+      day: date
+        .toLocaleString("en-US", { weekday: "short", timeZone: APP_TIMEZONE })
+        .toUpperCase(),
       date: date.getDate(),
       fullDate: date,
-      isToday: isSameDay(date, new Date()),
-      isActive: isSameDay(date, selectedDate),
+      isToday: isSameDay(
+        date,
+        getCurrentDateInTimezone(APP_TIMEZONE),
+        APP_TIMEZONE
+      ),
+      isActive: isSameDay(date, selectedDate, APP_TIMEZONE),
       isPadding: true,
     });
   }
@@ -80,11 +160,17 @@ export const getMonthDays = ({
   for (let i = 1; i <= lastDayOfMonth.getDate(); i++) {
     const date = new Date(Date.UTC(year, month, i));
     allDays.push({
-      day: date.toLocaleString("en-US", { weekday: "short" }).toUpperCase(),
+      day: date
+        .toLocaleString("en-US", { weekday: "short", timeZone: APP_TIMEZONE })
+        .toUpperCase(),
       date: i,
       fullDate: date,
-      isToday: isSameDay(date, new Date()),
-      isActive: isSameDay(date, selectedDate),
+      isToday: isSameDay(
+        date,
+        getCurrentDateInTimezone(APP_TIMEZONE),
+        APP_TIMEZONE
+      ),
+      isActive: isSameDay(date, selectedDate, APP_TIMEZONE),
       isPadding: false,
     });
   }
@@ -92,11 +178,17 @@ export const getMonthDays = ({
   for (let i = 1; i <= endPadding; i++) {
     const date = new Date(Date.UTC(year, month + 1, i));
     allDays.push({
-      day: date.toLocaleString("en-US", { weekday: "short" }).toUpperCase(),
+      day: date
+        .toLocaleString("en-US", { weekday: "short", timeZone: APP_TIMEZONE })
+        .toUpperCase(),
       date: i,
       fullDate: date,
-      isToday: isSameDay(date, new Date()),
-      isActive: isSameDay(date, selectedDate),
+      isToday: isSameDay(
+        date,
+        getCurrentDateInTimezone(APP_TIMEZONE),
+        APP_TIMEZONE
+      ),
+      isActive: isSameDay(date, selectedDate, APP_TIMEZONE),
       isPadding: true,
     });
   }

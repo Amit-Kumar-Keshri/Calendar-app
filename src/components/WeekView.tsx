@@ -1,7 +1,19 @@
-import React, { useEffect, useState } from "react";
+import React, {
+  useEffect,
+  useState,
+  useMemo,
+  useCallback,
+  useRef,
+} from "react";
 import type { Event } from "../types";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faAngleLeft, faAngleRight } from "@fortawesome/free-solid-svg-icons";
+import {
+  APP_TIMEZONE,
+  getCurrentDateInTimezone,
+  isSameDay,
+  convertToTimezone,
+} from "../utils/dateTime";
 
 interface WeekViewProps {
   events: Event[];
@@ -27,29 +39,32 @@ const formatTime = (
   if (!dateStr) return "";
   const date = new Date(dateStr);
   if (format === "24h") {
-    return date.toLocaleTimeString([], {
+    return date.toLocaleTimeString("en-US", {
       hour: "2-digit",
       minute: "2-digit",
       hour12: false,
+      timeZone: APP_TIMEZONE,
     });
   } else {
-    return date.toLocaleTimeString([], {
+    return date.toLocaleTimeString("en-US", {
       hour: "2-digit",
       minute: "2-digit",
       hour12: true,
+      timeZone: APP_TIMEZONE,
     });
   }
 };
 
-// Change getMonday to getSunday, so week starts on Sunday
+// Change getMonday to getSunday, so week starts on Sunday - now timezone aware
 const getSunday = (date: Date) => {
-  const d = new Date(date);
+  // Convert to timezone first
+  const d = new Date(date.toLocaleString("en-US", { timeZone: APP_TIMEZONE }));
   const day = d.getDay();
   const diff = d.getDate() - day;
   return new Date(d.setDate(diff));
 };
 
-// Update generateWeekArray to use getSunday
+// Update generateWeekArray to use getSunday - now timezone aware
 const generateWeekArray = (sunday: Date) => {
   const week = [];
   for (let i = 0; i < 7; i++) {
@@ -92,27 +107,104 @@ const isMultiDay = (event: Event) => {
 
 const WeekView: React.FC<WeekViewProps> = ({ events, onSwitchView }) => {
   const [currentSunday, setCurrentSunday] = useState<Date>(
-    getSunday(new Date())
+    getSunday(getCurrentDateInTimezone())
   );
   const [currentWeek, setCurrentWeek] = useState<Date[]>(
-    generateWeekArray(getSunday(new Date()))
+    generateWeekArray(getSunday(getCurrentDateInTimezone()))
   );
-  const [now, setNow] = useState(new Date());
+  const [now, setNow] = useState(getCurrentDateInTimezone());
   const [timeFormat, setTimeFormat] = useState<"12h" | "24h">("12h");
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
   const [popupEvent, setPopupEvent] = useState<{
     dayIdx: number;
     eventId: string | number;
   } | null>(null);
+  const [hoveredEvent, setHoveredEvent] = useState<{
+    event: Event;
+    x: number;
+    y: number;
+  } | null>(null);
+
+  // Ref for the grid container to control scrolling
+  const gridContainerRef = useRef<HTMLDivElement>(null);
+
+  // Memoize timezone-converted events to avoid repeated conversions
+  const convertedEvents = useMemo(() => {
+    return events.map((event) => {
+      let convertedStart = null;
+      let convertedEnd = null;
+
+      if (event.start.dateTime) {
+        convertedStart = convertToTimezone(new Date(event.start.dateTime));
+      } else if (event.start.date) {
+        convertedStart = new Date(event.start.date);
+      }
+
+      if (event.end.dateTime) {
+        convertedEnd = convertToTimezone(new Date(event.end.dateTime));
+      } else if (event.end.date) {
+        const d = new Date(event.end.date);
+        d.setDate(d.getDate() - 1);
+        convertedEnd = d;
+      }
+
+      return {
+        ...event,
+        convertedStart,
+        convertedEnd,
+      };
+    });
+  }, [events]);
+
+  // Memoize events grouped by day for better performance
+  const eventsByDay = useMemo(() => {
+    const dayMap = new Map<number, typeof convertedEvents>();
+
+    currentWeek.forEach((date, dayIdx) => {
+      const dayEvents = convertedEvents.filter((event) => {
+        if (!event.convertedStart || !event.convertedEnd) return false;
+
+        if (isMultiDay(event)) {
+          return event.convertedStart <= date && date <= event.convertedEnd;
+        } else {
+          return (
+            event.convertedStart.getFullYear() === date.getFullYear() &&
+            event.convertedStart.getMonth() === date.getMonth() &&
+            event.convertedStart.getDate() === date.getDate()
+          );
+        }
+      });
+
+      dayMap.set(dayIdx, dayEvents);
+    });
+
+    return dayMap;
+  }, [convertedEvents, currentWeek]);
 
   useEffect(() => {
     setCurrentWeek(generateWeekArray(currentSunday));
   }, [currentSunday]);
 
+  // Scroll to 6 AM when component mounts or week changes
+  useEffect(() => {
+    const scrollTo6AM = () => {
+      if (gridContainerRef.current) {
+        // Calculate scroll position for 6 AM
+        // Grid structure: 60px header + 30px spacer + (6 * hourHeight)
+        const scrollTop = 60 + 30 + 6 * hourHeight;
+        gridContainerRef.current.scrollTop = scrollTop;
+      }
+    };
+
+    // Use setTimeout to ensure the DOM is rendered
+    const timeoutId = setTimeout(scrollTo6AM, 100);
+    return () => clearTimeout(timeoutId);
+  }, [currentWeek]); // Trigger when week changes
+
   // Add timer to update 'now' every minute
   useEffect(() => {
     const interval = setInterval(() => {
-      setNow(new Date());
+      setNow(getCurrentDateInTimezone());
     }, 60000);
     return () => clearInterval(interval);
   }, []);
@@ -140,44 +232,58 @@ const WeekView: React.FC<WeekViewProps> = ({ events, onSwitchView }) => {
     return () => document.removeEventListener("click", handleClick);
   }, [popupEvent]);
 
-  const navigateToNextWeek = () => {
+  const navigateToNextWeek = useCallback(() => {
     const nextSunday = new Date(currentSunday);
     nextSunday.setDate(nextSunday.getDate() + 7);
     setCurrentSunday(nextSunday);
-  };
+  }, [currentSunday]);
 
-  const navigateToPreviousWeek = () => {
+  const navigateToPreviousWeek = useCallback(() => {
     const prevSunday = new Date(currentSunday);
     prevSunday.setDate(prevSunday.getDate() - 7);
     setCurrentSunday(prevSunday);
-  };
+  }, [currentSunday]);
 
-  const handleToday = () => {
-    const todaySunday = getSunday(new Date());
+  const handleToday = useCallback(() => {
+    const todaySunday = getSunday(getCurrentDateInTimezone());
     setCurrentSunday(todaySunday);
-  };
+  }, []);
 
-  const formatWeekRange = () => {
+  const formatWeekRange = useCallback(() => {
     if (currentWeek.length === 0) return "";
     const start = currentWeek[0];
     const end = currentWeek[6];
     const options: Intl.DateTimeFormatOptions = {
       month: "short",
       day: "numeric",
+      timeZone: APP_TIMEZONE,
     };
     if (start.getMonth() === end.getMonth()) {
       return `${start.toLocaleDateString(
-        undefined,
+        "en-US",
         options
-      )} - ${end.getDate()}, ${end.toLocaleString("default", {
+      )} - ${end.getDate()}, ${end.toLocaleString("en-US", {
         month: "short",
+        timeZone: APP_TIMEZONE,
       })} ${end.getFullYear()}`;
     }
     return `${start.toLocaleDateString(
-      undefined,
+      "en-US",
       options
-    )} - ${end.toLocaleDateString(undefined, options)}, ${end.getFullYear()}`;
-  };
+    )} - ${end.toLocaleDateString("en-US", options)}, ${end.getFullYear()}`;
+  }, [currentWeek]);
+
+  const handleEventHover = useCallback((event: Event, e: React.MouseEvent) => {
+    setHoveredEvent({
+      event,
+      x: e.clientX,
+      y: e.clientY,
+    });
+  }, []);
+
+  const handleEventLeave = useCallback(() => {
+    setHoveredEvent(null);
+  }, []);
 
   return (
     <div>
@@ -239,15 +345,18 @@ const WeekView: React.FC<WeekViewProps> = ({ events, onSwitchView }) => {
       </div>
       {/* Week View Grid */}
       <div
+        ref={gridContainerRef}
         className="weekview-grid"
         style={{
           gridTemplateRows: `60px 30px repeat(24, ${hourHeight}px)` /* Adjusted for empty row */,
+          maxHeight: "calc(100vh - 200px)", // Make it scrollable
+          overflowY: "auto",
         }}
       >
         {/* Current time indicator across the whole week */}
         {(() => {
           // Only show if today is in the current week
-          const today = new Date();
+          const today = getCurrentDateInTimezone();
           const weekStart = currentWeek[0];
           const weekEnd = currentWeek[6];
           if (
@@ -306,7 +415,7 @@ const WeekView: React.FC<WeekViewProps> = ({ events, onSwitchView }) => {
         {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map((d, i) => {
           const isToday =
             currentWeek[i] &&
-            new Date().toDateString() === currentWeek[i].toDateString();
+            isSameDay(getCurrentDateInTimezone(), currentWeek[i]);
           return (
             <div
               key={d}
@@ -429,10 +538,11 @@ const WeekView: React.FC<WeekViewProps> = ({ events, onSwitchView }) => {
                                 ×
                               </button>
                               <div className="popup-title">
-                                {date.toLocaleDateString(undefined, {
+                                {date.toLocaleDateString("en-US", {
                                   month: "short",
                                   day: "numeric",
                                   year: "numeric",
+                                  timeZone: APP_TIMEZONE,
                                 })}
                               </div>
                               <div className="popup-event">
@@ -451,35 +561,12 @@ const WeekView: React.FC<WeekViewProps> = ({ events, onSwitchView }) => {
                       </div>
                     ))}
                   {/* Timed/single-day events as dots in their time slots */}
-                  {events
-                    .filter((event) => {
-                      const eventDate = event.start.dateTime
-                        ? new Date(event.start.dateTime)
-                        : event.start.date
-                        ? new Date(event.start.date)
-                        : null;
-                      const eventEnd = event.end.dateTime
-                        ? new Date(event.end.dateTime)
-                        : event.end.date
-                        ? new Date(event.end.date)
-                        : null;
-                      if (!eventDate || !eventEnd) return false;
-                      // Only show single-day or timed events
-                      if (event.end.date && !event.end.dateTime) {
-                        eventEnd.setDate(eventEnd.getDate() - 1);
-                      }
-                      return (
-                        !isMultiDay(event) &&
-                        eventDate.getFullYear() === date.getFullYear() &&
-                        eventDate.getMonth() === date.getMonth() &&
-                        eventDate.getDate() === date.getDate()
-                      );
-                    })
+                  {(eventsByDay.get(dayIdx) || [])
+                    .filter((event) => !isMultiDay(event))
                     .map((event, idx) => {
-                      const start = event.startTime
-                        ? new Date(event.startTime)
-                        : null;
+                      const start = event.convertedStart;
                       if (!start) return null;
+
                       const startHour =
                         start.getHours() + start.getMinutes() / 60;
                       const top = startHour * hourHeight;
@@ -532,10 +619,11 @@ const WeekView: React.FC<WeekViewProps> = ({ events, onSwitchView }) => {
                                   ×
                                 </button>
                                 <div className="popup-title">
-                                  {date.toLocaleDateString(undefined, {
+                                  {date.toLocaleDateString("en-US", {
                                     month: "short",
                                     day: "numeric",
                                     year: "numeric",
+                                    timeZone: APP_TIMEZONE,
                                   })}
                                 </div>
                                 <div className="popup-event">
@@ -561,15 +649,8 @@ const WeekView: React.FC<WeekViewProps> = ({ events, onSwitchView }) => {
                 <>
                   {/* Multi-day event bars stacked at the top below the date */}
                   <div className="weekview-multiday-event-container">
-                    {events
-                      .filter((event) => {
-                        const start = getEventStart(event);
-                        const end = getEventEnd(event);
-                        if (!start || !end) return false;
-                        return (
-                          isMultiDay(event) && start <= date && date <= end
-                        );
-                      })
+                    {(eventsByDay.get(dayIdx) || [])
+                      .filter((event) => isMultiDay(event))
                       .map((event, idx) => {
                         const start = getEventStart(event)!;
                         const end = getEventEnd(event)!;
@@ -597,6 +678,8 @@ const WeekView: React.FC<WeekViewProps> = ({ events, onSwitchView }) => {
                               borderTopRightRadius: isLastDay ? 2 : 0,
                               borderBottomRightRadius: isLastDay ? 2 : 0,
                             }}
+                            onMouseEnter={(e) => handleEventHover(event, e)}
+                            onMouseLeave={handleEventLeave}
                           >
                             {event.summary}
                           </div>
@@ -621,38 +704,13 @@ const WeekView: React.FC<WeekViewProps> = ({ events, onSwitchView }) => {
                       })(),
                     }}
                   >
-                    {events
-                      .filter((event) => {
-                        const eventDate = event.start.dateTime
-                          ? new Date(event.start.dateTime)
-                          : event.start.date
-                          ? new Date(event.start.date)
-                          : null;
-                        const eventEnd = event.end.dateTime
-                          ? new Date(event.end.dateTime)
-                          : event.end.date
-                          ? new Date(event.end.date)
-                          : null;
-                        if (!eventDate || !eventEnd) return false;
-                        // Only show single-day or timed events
-                        if (event.end.date && !event.end.dateTime) {
-                          eventEnd.setDate(eventEnd.getDate() - 1);
-                        }
-                        return (
-                          !isMultiDay(event) &&
-                          eventDate.getFullYear() === date.getFullYear() &&
-                          eventDate.getMonth() === date.getMonth() &&
-                          eventDate.getDate() === date.getDate()
-                        );
-                      })
+                    {(eventsByDay.get(dayIdx) || [])
+                      .filter((event) => !isMultiDay(event))
                       .map((event, idx, arr) => {
-                        const start = event.startTime
-                          ? new Date(event.startTime)
-                          : null;
-                        const end = event.endTime
-                          ? new Date(event.endTime)
-                          : null;
+                        const start = event.convertedStart;
+                        const end = event.convertedEnd;
                         if (!start || !end) return null;
+
                         const startHour =
                           start.getHours() + start.getMinutes() / 60;
                         let endHour = end.getHours() + end.getMinutes() / 60;
@@ -673,9 +731,10 @@ const WeekView: React.FC<WeekViewProps> = ({ events, onSwitchView }) => {
                         // Find overlapping events for this day
                         const overlapping = arr.filter((e) => {
                           if (e === event) return false;
-                          const s = e.startTime ? new Date(e.startTime) : null;
-                          const en = e.endTime ? new Date(e.endTime) : null;
+                          const s = e.convertedStart;
+                          const en = e.convertedEnd;
                           if (!s || !en) return false;
+
                           const sHour = s.getHours() + s.getMinutes() / 60;
                           const enHour = en.getHours() + en.getMinutes() / 60;
                           return startHour < enHour && endHour > sHour;
@@ -699,6 +758,8 @@ const WeekView: React.FC<WeekViewProps> = ({ events, onSwitchView }) => {
                               width,
                               height,
                             }}
+                            onMouseEnter={(e) => handleEventHover(event, e)}
+                            onMouseLeave={handleEventLeave}
                           >
                             {event.start.dateTime && (
                               <span className="mr-1">
@@ -716,6 +777,47 @@ const WeekView: React.FC<WeekViewProps> = ({ events, onSwitchView }) => {
           );
         })}
       </div>
+
+      {/* Event Hover Tooltip */}
+      {hoveredEvent && (
+        <div
+          className="event-tooltip"
+          style={{
+            position: "fixed",
+            left: hoveredEvent.x + 10,
+            top: hoveredEvent.y - 10,
+            background: "rgba(0, 0, 0, 0.9)",
+            color: "white",
+            padding: "8px 12px",
+            borderRadius: "6px",
+            fontSize: "12px",
+            zIndex: 10000,
+            maxWidth: "250px",
+            pointerEvents: "none",
+          }}
+        >
+          <div style={{ fontWeight: "bold", marginBottom: "4px" }}>
+            {hoveredEvent.event.summary || hoveredEvent.event.title || "Event"}
+          </div>
+          {hoveredEvent.event.start.dateTime && (
+            <div style={{ marginBottom: "2px" }}>
+              {formatTime(hoveredEvent.event.start.dateTime, timeFormat)}
+              {hoveredEvent.event.end.dateTime &&
+                ` - ${formatTime(hoveredEvent.event.end.dateTime, timeFormat)}`}
+            </div>
+          )}
+          {hoveredEvent.event.description && (
+            <div style={{ fontSize: "11px", opacity: 0.9 }}>
+              {hoveredEvent.event.description}
+            </div>
+          )}
+          {hoveredEvent.event.location && (
+            <div style={{ fontSize: "11px", opacity: 0.8, marginTop: "2px" }}>
+              📍 {hoveredEvent.event.location}
+            </div>
+          )}
+        </div>
+      )}
     </div>
   );
 };
