@@ -41,18 +41,20 @@ const formatTime = (
   }
 };
 
-const getMonday = (date: Date) => {
+// Change getMonday to getSunday, so week starts on Sunday
+const getSunday = (date: Date) => {
   const d = new Date(date);
   const day = d.getDay();
-  const diff = d.getDate() - ((day + 6) % 7);
+  const diff = d.getDate() - day;
   return new Date(d.setDate(diff));
 };
 
-const generateWeekArray = (monday: Date) => {
+// Update generateWeekArray to use getSunday
+const generateWeekArray = (sunday: Date) => {
   const week = [];
   for (let i = 0; i < 7; i++) {
     week.push(
-      new Date(monday.getFullYear(), monday.getMonth(), monday.getDate() + i)
+      new Date(sunday.getFullYear(), sunday.getMonth(), sunday.getDate() + i)
     );
   }
   return week;
@@ -89,11 +91,11 @@ const isMultiDay = (event: Event) => {
 };
 
 const WeekView: React.FC<WeekViewProps> = ({ events, onSwitchView }) => {
-  const [currentMonday, setCurrentMonday] = useState<Date>(
-    getMonday(new Date())
+  const [currentSunday, setCurrentSunday] = useState<Date>(
+    getSunday(new Date())
   );
   const [currentWeek, setCurrentWeek] = useState<Date[]>(
-    generateWeekArray(getMonday(new Date()))
+    generateWeekArray(getSunday(new Date()))
   );
   const [now, setNow] = useState(new Date());
   const [timeFormat, setTimeFormat] = useState<"12h" | "24h">("12h");
@@ -104,8 +106,8 @@ const WeekView: React.FC<WeekViewProps> = ({ events, onSwitchView }) => {
   } | null>(null);
 
   useEffect(() => {
-    setCurrentWeek(generateWeekArray(currentMonday));
-  }, [currentMonday]);
+    setCurrentWeek(generateWeekArray(currentSunday));
+  }, [currentSunday]);
 
   // Add timer to update 'now' every minute
   useEffect(() => {
@@ -139,20 +141,20 @@ const WeekView: React.FC<WeekViewProps> = ({ events, onSwitchView }) => {
   }, [popupEvent]);
 
   const navigateToNextWeek = () => {
-    const nextMonday = new Date(currentMonday);
-    nextMonday.setDate(nextMonday.getDate() + 7);
-    setCurrentMonday(nextMonday);
+    const nextSunday = new Date(currentSunday);
+    nextSunday.setDate(nextSunday.getDate() + 7);
+    setCurrentSunday(nextSunday);
   };
 
   const navigateToPreviousWeek = () => {
-    const prevMonday = new Date(currentMonday);
-    prevMonday.setDate(prevMonday.getDate() - 7);
-    setCurrentMonday(prevMonday);
+    const prevSunday = new Date(currentSunday);
+    prevSunday.setDate(prevSunday.getDate() - 7);
+    setCurrentSunday(prevSunday);
   };
 
   const handleToday = () => {
-    const todayMonday = getMonday(new Date());
-    setCurrentMonday(todayMonday);
+    const todaySunday = getSunday(new Date());
+    setCurrentSunday(todaySunday);
   };
 
   const formatWeekRange = () => {
@@ -301,7 +303,7 @@ const WeekView: React.FC<WeekViewProps> = ({ events, onSwitchView }) => {
           style={{ gridColumn: "2 / span 7", gridRow: "2 / 3" }}
         />
 
-        {["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"].map((d, i) => {
+        {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map((d, i) => {
           const isToday =
             currentWeek[i] &&
             new Date().toDateString() === currentWeek[i].toDateString();
