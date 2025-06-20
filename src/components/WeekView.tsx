@@ -112,7 +112,6 @@ const WeekView: React.FC<WeekViewProps> = ({ events, onSwitchView }) => {
   const [currentWeek, setCurrentWeek] = useState<Date[]>(
     generateWeekArray(getSunday(getCurrentDateInTimezone()))
   );
-  const [now, setNow] = useState(getCurrentDateInTimezone());
   const [timeFormat, setTimeFormat] = useState<"12h" | "24h">("12h");
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
   const [popupEvent, setPopupEvent] = useState<{
@@ -201,10 +200,11 @@ const WeekView: React.FC<WeekViewProps> = ({ events, onSwitchView }) => {
     return () => clearTimeout(timeoutId);
   }, [currentWeek]); // Trigger when week changes
 
-  // Add timer to update 'now' every minute
+  // Timer to trigger re-render every minute to update time indicator
   useEffect(() => {
     const interval = setInterval(() => {
-      setNow(getCurrentDateInTimezone());
+      // Force re-render by updating a dummy state or just rely on the component update
+      // The time indicator will use getCurrentDateInTimezone() directly
     }, 60000);
     return () => clearInterval(interval);
   }, []);
@@ -376,23 +376,78 @@ const WeekView: React.FC<WeekViewProps> = ({ events, onSwitchView }) => {
                 59
               )
           ) {
-            const minutes = now.getHours() * 60 + now.getMinutes();
-            const top = 60 + 30 + (minutes / 60) * hourHeight; // Adjusted for header row and new empty row
+            // Get the current time in America/New_York timezone
+            const currentTime = getCurrentDateInTimezone();
+            const hours = currentTime.getHours();
+            const minutes = currentTime.getMinutes();
+            const totalMinutes = hours * 60 + minutes;
+
+            // Position relative to the time grid content (after header and spacer)
+            // Grid structure: 60px header + 30px spacer + (hour position * hourHeight)
+            const top = 60 + 30 + (totalMinutes / 60) * hourHeight;
+
             return (
               <>
                 <div
                   className="weekview-time-indicator"
                   style={{
+                    position: "absolute",
                     top: top,
+                    left: "60px", // Width of time column
+                    right: "0",
+                    height: "2px",
+                    background: "#000", // Make it red so it's visible
+                    zIndex: 20,
+                    pointerEvents: "none",
+                    display: "flex",
+                    alignItems: "center",
                   }}
                 >
                   {/* Left vertical line */}
-                  <div className="weekview-time-indicator-line weekview-time-indicator-line-left" />
+                  <div
+                    className="weekview-time-indicator-line weekview-time-indicator-line-left"
+                    style={{
+                      position: "absolute",
+                      left: "0",
+                      top: "-2px",
+                      width: "1px",
+                      height: "8px",
+                      background: "#000",
+                    }}
+                  />
                   {/* Right vertical line */}
-                  <div className="weekview-time-indicator-line weekview-time-indicator-line-right" />
+                  <div
+                    className="weekview-time-indicator-line weekview-time-indicator-line-right"
+                    style={{
+                      position: "absolute",
+                      right: "0",
+                      top: "-2px",
+                      width: "1px",
+                      height: "8px",
+                      background: "#000",
+                    }}
+                  />
                   {/* Time label (next to bar) */}
-                  <span className="weekview-time-indicator-label">
-                    {formatTime(now.toISOString(), timeFormat)}
+                  <span
+                    className="weekview-time-indicator-label"
+                    style={{
+                      position: "absolute",
+                      left: "-54px",
+                      top: "-10px",
+                      color: "#000",
+                      fontWeight: "700",
+                      fontSize: "13px",
+                      background: "#fff",
+                      padding: "0 4px",
+                      borderRadius: "4px",
+                      zIndex: 21,
+                    }}
+                  >
+                    {currentTime.toLocaleTimeString("en-US", {
+                      hour: "2-digit",
+                      minute: "2-digit",
+                      hour12: timeFormat === "12h",
+                    })}
                   </span>
                 </div>
               </>
