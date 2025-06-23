@@ -1,5 +1,6 @@
 import React from "react";
 import type { Event } from "../types";
+import { formatEventTime } from "../utils/eventHelpers";
 
 interface EventListProps {
   events: Event[];
@@ -15,25 +16,19 @@ const EventList: React.FC<EventListProps> = ({ events }) => {
         <ul>
           {events.map((event) => (
             <li key={event.id}>
-              <h3>{event.title}</h3>
+              <h3>{event.summary}</h3>
               {/* Show start and end time below the event name */}
               <div>
-                {event.startTime
-                  ? new Date(event.startTime).toLocaleTimeString([], {
-                      hour: "2-digit",
-                      minute: "2-digit",
-                    })
+                {event.start.dateTime
+                  ? formatEventTime(event.start.dateTime)
                   : ""}
-                {event.endTime
-                  ? " - " +
-                    new Date(event.endTime).toLocaleTimeString([], {
-                      hour: "2-digit",
-                      minute: "2-digit",
-                    })
+                {event.end.dateTime
+                  ? " - " + formatEventTime(event.end.dateTime)
                   : ""}
               </div>
               <p>
-                {event.startDate} - {event.endDate}
+                {event.start.date || event.start.dateTime} -{" "}
+                {event.end.date || event.end.dateTime}
               </p>
               <p>{event.description}</p>
             </li>

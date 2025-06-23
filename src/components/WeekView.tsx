@@ -609,7 +609,7 @@ const WeekView: React.FC<WeekViewProps> = ({ events, onSwitchView }) => {
                                     )}
                                   </span>
                                 )}
-                                {event.summary || event.title}
+                                {event.summary}
                               </div>
                             </div>
                           )}
@@ -690,7 +690,7 @@ const WeekView: React.FC<WeekViewProps> = ({ events, onSwitchView }) => {
                                       )}
                                     </span>
                                   )}
-                                  {event.summary || event.title}
+                                  {event.summary}
                                 </div>
                               </div>
                             )}
@@ -821,7 +821,7 @@ const WeekView: React.FC<WeekViewProps> = ({ events, onSwitchView }) => {
                                 {formatTime(event.start.dateTime, timeFormat)}
                               </span>
                             )}
-                            {event.summary || event.title || `Event ${idx + 1}`}
+                            {event.summary || `Event ${idx + 1}`}
                           </div>
                         );
                       })}
@@ -869,7 +869,7 @@ const WeekView: React.FC<WeekViewProps> = ({ events, onSwitchView }) => {
           }}
         >
           <div style={{ fontWeight: "bold", marginBottom: "4px" }}>
-            {hoveredEvent.event.summary || hoveredEvent.event.title || "Event"}
+            {hoveredEvent.event.summary || "Event"}
           </div>
           {hoveredEvent.event.start.dateTime && (
             <div style={{ marginBottom: "2px" }}>

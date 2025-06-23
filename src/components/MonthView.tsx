@@ -287,8 +287,7 @@ const MonthView: React.FC<MonthViewProps> = ({ events, onSwitchView }) => {
                         )
                       : dayEvents.slice(0, 3).map((event, i) => {
                           const isExpanded = expandedEvent[idx] === i;
-                          const title =
-                            event.summary || event.title || `Event ${i + 1}`;
+                          const title = event.summary || `Event ${i + 1}`;
                           const isExpandable = title.length > 40;
                           return (
                             <div
@@ -368,7 +367,7 @@ const MonthView: React.FC<MonthViewProps> = ({ events, onSwitchView }) => {
                               {formatTime(event.start.dateTime, "12h")}
                             </span>
                           )}
-                          {event.summary || event.title || `Event ${i + 1}`}
+                          {event.summary || `Event ${i + 1}`}
                         </div>
                       ))}
                     </div>
@@ -399,7 +398,7 @@ const MonthView: React.FC<MonthViewProps> = ({ events, onSwitchView }) => {
           }}
         >
           <div style={{ fontWeight: "bold", marginBottom: "4px" }}>
-            {hoveredEvent.event.summary || hoveredEvent.event.title || "Event"}
+            {hoveredEvent.event.summary || "Event"}
           </div>
           {hoveredEvent.event.start.dateTime && (
             <div style={{ marginBottom: "2px" }}>
