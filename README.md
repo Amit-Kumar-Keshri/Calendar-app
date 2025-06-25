@@ -87,7 +87,7 @@ A single-page application that displays events from a public Google Calendar. Th
 
 1.  Clone the repository:
     ```bash
-    git clone https://github.com/your-username/calendar-app.git
+    git clone https://github.com/Amit-Kumar-Keshri/Calendar-app.git
     ```
 2.  Navigate to the project directory:
     ```bash
